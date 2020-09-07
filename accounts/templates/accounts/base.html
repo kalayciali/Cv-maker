@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CayCV</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  </head>
+
+   <body>
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <ul class="nav navbar-nav">
+{# Django Home Link / Admin Link / Register Link#}
+          <li><a class="navbar-brand" href="{% url 'accounts:index' %}">CayCV</a></li>
+          <li><a class="navbar-link" href="{% url 'accounts:sign-up' %}">Kaydol</a></li>
+          {# Some logic on what to display for last item#}
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'accounts:logout-user' %}">Çıkış yap</a></li>
+          {% else %}
+            <li><a class="navbar-link" href="{% url 'accounts:login-user' %}">Giriş</a></li>
+          {% endif %}
+</ul>
+      </div>
+    </nav>
+    <div class="container">
+    {% block content%}
+    {% endblock %}
+    </div>
+  </body>
+</html>

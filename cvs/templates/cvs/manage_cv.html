@@ -1,0 +1,10 @@
+<form method="post">
+    {% for formset in all_formsets %}
+        {{ formset.management_form }}
+        <table>
+            {% for form in formset %}
+            {{ form }}
+            {% endfor %}
+        </table>
+    {% endfor %}
+</form>
