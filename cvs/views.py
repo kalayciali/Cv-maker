@@ -55,40 +55,40 @@ def generate_formsets(request):
     else:
         exp_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
             {'decider': 'Exp',}
-        ])
+        ] )
         all_formsets.append(exp_formset)
 
         ed_formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
             { 'decider': 'Ed',}
-        ])
+        ] )
         all_formsets.append(ed_formset)
 
         lang_formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
             { 'decider': 'Lang', }
-        ])
+        ] )
         all_formsets.append(lang_formset)
 
         tech_formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
             { 'decider': 'Tech', }
-        ])
+        ] )
         all_formsets.append(tech_formset)
 
         skill_formset = forms.SkillFormSet( instance=profile, prefix='skills', initial=[
             { 'decider': 'Skill', }
-        ])
+        ] )
         all_formsets.append(skill_formset)
 
         award_formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
             { 'decider': 'Award' }
-        ])
+        ] )
         all_formsets.append(award_formset)
 
         public_formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
             { 'decider': 'Pub' }
-        ])
+        ] )
         all_formsets.append(public_formset)
 
-        project_formset = forms.ProjectFormSet( instance=profile, prefix="projects")
+        project_formset = forms.ProjectFormSet( instance=profile, prefix="projects" )
         all_formsets.append(project_formset)
 
     return all_formsets

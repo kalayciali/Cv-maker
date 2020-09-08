@@ -15,7 +15,7 @@ class ExperienceForm(ModelForm):
             "end_date": "Bitiş tarihi"
         }
 
-ExperienceFormSet = inlineformset_factory(Profile, models.Experience, form=ExperienceForm, can_delete=True, extra=1)
+ExperienceFormSet = inlineformset_factory(Profile, models.Experience, form=ExperienceForm, extra=1)
 
 class EducationForm(ModelForm):
     class Meta:
@@ -29,7 +29,7 @@ class EducationForm(ModelForm):
             "end_date": "Bitiş tarihi"
         }
 
-EducationFormSet = inlineformset_factory(Profile, models.Experience, form=EducationForm, can_delete=True, extra=1)
+EducationFormSet = inlineformset_factory(Profile, models.Experience, form=EducationForm,  extra=1)
 
 
 class LangForm(ModelForm):
@@ -41,7 +41,7 @@ class LangForm(ModelForm):
             'star': "Ne kadar"
         }
 
-LangFormSet= inlineformset_factory(Profile, models.Bar, form=LangForm, can_delete=True, extra=1)
+LangFormSet= inlineformset_factory(Profile, models.Bar, form=LangForm,  extra=1)
 
 class TechForm(ModelForm):
     class Meta:
@@ -52,7 +52,7 @@ class TechForm(ModelForm):
             'star': "Ne kadar"
         }
 
-TechFormSet= inlineformset_factory(Profile, models.Bar, form=TechForm, can_delete=True, extra=1)
+TechFormSet= inlineformset_factory(Profile, models.Bar, form=TechForm,  extra=1)
 
 class SkillForm(ModelForm):
     class Meta:
@@ -63,7 +63,7 @@ class SkillForm(ModelForm):
             'star': "Ne kadar"
         }
 
-SkillFormSet = inlineformset_factory(Profile, models.Bar, form=SkillForm, can_delete=True, extra=1)
+SkillFormSet = inlineformset_factory(Profile, models.Bar, form=SkillForm,  extra=1)
 
 class AwardForm(ModelForm):
     class Meta:
@@ -74,7 +74,7 @@ class AwardForm(ModelForm):
             'date': "Hangi tarihte"
         }
 
-AwardFormSet= inlineformset_factory(Profile, models.Award, form=AwardForm, can_delete=True, extra=1)
+AwardFormSet= inlineformset_factory(Profile, models.Award, form=AwardForm,  extra=1)
 
 class PublicForm(ModelForm):
     class Meta:
@@ -85,7 +85,7 @@ class PublicForm(ModelForm):
             'date': "Hangi tarihte"
         }
 
-PublicFormSet= inlineformset_factory(Profile, models.Award, form=PublicForm, can_delete=True, extra=1)
+PublicFormSet= inlineformset_factory(Profile, models.Award, form=PublicForm,  extra=1)
 
 
 class ProjectForm(ModelForm):
@@ -98,5 +98,5 @@ class ProjectForm(ModelForm):
             "descript": "Neler yaptığınızı burada anlatabilirsiniz."
         }
 
-ProjectFormSet= inlineformset_factory(Profile, models.Project, form=ProjectForm, can_delete=True, extra=1)
+ProjectFormSet= inlineformset_factory(Profile, models.Project, form=ProjectForm,  extra=1)
 

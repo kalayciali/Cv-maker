@@ -1,10 +1,93 @@
-<form method="post">
+{% extends 'cvs/home.html' %}
+
+{% block content %}
+<form class="form-horizontal" method="post" action="">
     {% for formset in all_formsets %}
+        {% csrf_token %}
         {{ formset.management_form }}
-        <table>
-            {% for form in formset %}
-            {{ form }}
-            {% endfor %}
-        </table>
+        {% for form in formset %}
+        <div class="row form-row spacer">
+            <div class="col-4">
+                {{form}}
+            </div>
+            <div class="{{form.prefix}}">
+                <button class="btn btn-success add-new-form">Yeni Ekle</button>
+            </div>
+        {% endfor %}
+        </div>
     {% endfor %}
+    <div class="row spacer">
+        <div class="col-4 offset-2">
+            <button type="submit" class="btn btn-block btn-primary">CV seç</button>
+        </div>
+    </div>
 </form>
+<script type='text/javascript'>
+
+    var counter = 1
+
+    function updateElemIndex(el, prefix, new_i) {
+        var id_regex = new RegExp('(' + prefix + '-\\d+)');
+        var replacement = prefix + '-' + new_i;
+        if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+        if (el.id) el.id = el.id.replace(id_regex, replacement);
+        if (el.name) el.name = el.name.replace(id_regex, replacement);
+    } 
+
+    function cloneMore(selector, prefix, target) {
+        var newElement = target.closest(selector).cloneNode(true);
+        target.parentElement.className = prefix + "-" + String(counter)
+        counter++
+        var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+        $(newElement).find(':input:not(button):not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+            var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+            var id = 'id_' + name;
+            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        });
+        $(newElement).find('label').each(function() {
+            var forValue = $(this).attr('for');
+            if (forValue) {
+                forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+                $(this).attr({'for': forValue});
+            }
+        });
+        total++;
+        $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+        target.closest(selector).after(newElement);
+        $(target).removeClass('btn-success').addClass('btn-danger')
+        .removeClass('add-new-form').addClass('remove-old-form')
+        .html('<span class="glyphicon glyphicon-minus" aria-hidden="true">Sil</span>');
+        return false;
+    }
+
+    function deleteForm(prefix, btn) {
+    var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    if (total > 1){
+        btn.closest('.form-row').remove();
+        var forms = $('div[class*=' + prefix + ']').parent()
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        for (var i=0, formCount=forms.length; i<formCount; i++) {
+            $(forms.get(i)).find(':input').each(function() {
+                updateElemIndex(this, prefix, i);
+            });
+        }
+    }
+    return false;
+    }
+
+    $(document).on('click', '.add-new-form', function(e){
+        e.preventDefault();
+        prefix = e.target.parentElement.className.replace(/(\w+)-\d+/i, "$1")
+        cloneMore('div.form-row', prefix, e.target);
+        return false;
+    });
+
+    $(document).on('click', '.remove-old-form', function(e){
+        e.preventDefault();
+        prefix = e.target.parentElement.className.replace(/(\w+)-\d+/, "$1")
+        deleteForm(prefix, $(this));
+        return false;
+    });
+
+</script>
+{% endblock %}
