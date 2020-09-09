@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
+    profile_pic = models.ImageField(upload_to='accounts', blank=True)
     bullet_descript = models.CharField(max_length=200, blank=True)
     descript = models.TextField(max_length=500, blank=True)
     phone_regex = RegexValidator(regex=r'^\d{11}$', message= "0 ile başlayarak 11 haneli olarak giriniz.")

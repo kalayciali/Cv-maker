@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from . import models
 from . import forms
 from accounts.models import Profile
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -15,7 +16,12 @@ def manage_cv(request):
         with transaction.atomic():
             if valid_for(all_formsets):
                 return_after_saving(all_formsets)
-                return redirect('select-cv')
+                return HttpResponse('you did it')
+            else:
+                errs = []
+                for formset in all_formsets:
+                    errs.append(formset.errors)
+                return HttpResponse(errs)
     else:
         all_formsets = generate_formsets(request)
         return render(request, 'cvs/manage_cv.html', {
@@ -95,8 +101,9 @@ def generate_formsets(request):
 
 def valid_for(formsets):
     for formset in formsets:
-        if not formset.is_valid():
-            return False
+        for form in formset:
+            if not form.is_valid():
+                return False
     return True
 
 def return_after_saving(formsets):

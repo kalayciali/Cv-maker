@@ -4,9 +4,9 @@ from accounts.models import Profile
 # Create your models here.
 class Cv(models.Model):
     name = models.CharField(max_length=100, blank=True)
-    css = models.FileField()
+    css = models.TextField(max_length=20000)
     html = models.TextField(max_length=20000, blank=True)
-    loc_data = models.CharField(max_length=400, blank=True)
+    loc_data = models.TextField(max_length=1000, blank=True)
     members = models.ManyToManyField(
         Profile,
         through='ProfileCv',
