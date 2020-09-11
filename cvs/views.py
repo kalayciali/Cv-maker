@@ -9,6 +9,7 @@ from django.http import HttpResponse
 import json
 import re
 from collections import OrderedDict
+from weasyprint import HTML
 
 # Create your views here.
 
@@ -33,15 +34,19 @@ def manage_cv(request):
 
 def index_cvs(request):
     profile = request.user.profile
-    if request.method == "POST":
-        pass
-    else:
-        cv = models.Cv.objects.all()[0]
-        newHtml = generateHtml(cv.loc_data, cv, profile)
-        prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
-        prof_cv.save()
-        return HttpResponse(newHtml)
-        # return render(request, 'cvs/show_cv.html', { 'newHtml': newHtml })
+    cv = models.Cv.objects.all()[2]
+    newHtml = generateHtml(cv.loc_data, cv, profile)
+    prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
+    prof_cv.save()
+
+    html = HTML(string=newHtml)
+    result = html.write_pdf()
+
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = f'filename={cv.name}.pdf'
+
+    return response
+
 
 # Helper functions
 
