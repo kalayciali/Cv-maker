@@ -1,13 +1,15 @@
 {% extends "accounts/base.html" %}
 {% block content %}
-<div class="container">
-  <div class="jumbotron">
-    <h1>Welcome to the Djungle !</h1>
-    {% if user.is_authenticated %}
-        <h2>Hello {{ user.username }}</h2>
-    {% else %}
-        <h2>Register or Login if you'd like to</h2>
-    {% endif %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>Bi çay içimi hızında CV</h1>
+    <p>
+      CV'ye mi ihtiyacın var. Sen çayını içerken biz CV'ni hazırlayalım!<br />
+      Aşağıdaki kutucuğa tıkla. Bilgilerini gir ve onlarca tema arasından birini seç.<br/>
+      Herşey bu kadar kolay. Bize de bi çay ısmarlarsın artık!
+    </p>
+    <br />
+    <p><a class="btn btn-primary btn-lg" href="{% url 'manage-cv' %}">Formu doldur</a></p>
   </div>
 </div>
 {% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'cvs/home.html' %}
+{% load static %}
+
+{% block content %}
+{% for cv in cvs%}
+<img src= "{% static cv%}"></img>
+{% endfor %}
+{% endblock %}

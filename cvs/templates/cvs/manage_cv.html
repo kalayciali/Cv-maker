@@ -7,8 +7,8 @@
         {{ formset.management_form }}
         {% for form in formset %}
         <div class="row form-row spacer">
-            <div class="col-4">
-                {{form}}
+            <div class="col-6">
+                {{form.as_p}}
             </div>
             <div class="{{form.prefix}}">
                 <button class="btn btn-success add-new-form">Yeni Ekle</button>

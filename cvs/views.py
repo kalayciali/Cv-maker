@@ -5,11 +5,14 @@ from django.contrib.auth.decorators import login_required
 from . import models
 from . import forms
 from accounts.models import Profile
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 import json
 import re
+import os
+from django.conf import settings
 from collections import OrderedDict
 from weasyprint import HTML
+
 
 # Create your views here.
 
@@ -38,16 +41,22 @@ def manage_cv(request):
 
 def index_cvs(request):
     profile = request.user.profile
-    cv = models.Cv.objects.all()[3]
-    newHtml = generateHtml(cv.loc_data, cv, profile)
-    prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
-    prof_cv.save()
+    cvs = models.Cv.objects.all()
+    cvs_names = []
+    for cv in cvs:
+        newHtml = generateHtml(cv.loc_data, cv, profile)
+        html = HTML(string=newHtml)
+        file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{cv.id}.png'), 'wb+')
+        result = html.write_png(target=file, resolution=40)
+        cvs_names.append(f"cvs/{cv.id}.png")
+    return render(request, 'cvs/index_cvs.html', { 'cvs': cvs_names })
 
-    html = HTML(string=newHtml)
-    result = html.write_pdf()
 
     response = HttpResponse(result, content_type='application/pdf')
-    response['Content-Disposition'] = f'filename={cv.name}.pdf'
+    #return render(request, 'cvs/index_cvs.html', { 'pdf': result })
+    #response['Content-Disposition'] = f'filename={cv.name}.pdf'
+    prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
+    prof_cv.save()
 
     return response
 

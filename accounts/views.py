@@ -32,7 +32,7 @@ def sign_user(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect()
+            return redirect('accounts:index')
     else:
         form = SignUpForm()
     return render(request, 'accounts/sign_up.html', { 'form': form })
@@ -43,14 +43,10 @@ def login_user(request):
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user:
-            if user.is_active:
-                login(request,user)
-                return HttpResponseRedirect(reverse('accounts:index'))
-            else:
-                return HttpResponse("Your account was inactive.")
+            login(request,user)
+            return HttpResponseRedirect(reverse('accounts:index'))
         else:
-            print("Someone tried to login and failed.")
-            print("They used username: {} and password: {}".format(username,password))
-            return HttpResponse("Invalid login details given")
+            err = "Kullanıcı adı ve şifre birbiriyle uyuşmuyor."
+            return render(request, 'accounts/login.html', { 'err': err })
     else:
         return render(request, 'accounts/login.html', {})
