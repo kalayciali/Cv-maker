@@ -15,7 +15,7 @@ class ExperienceForm(ModelForm):
             "end_date": "Bitiş tarihi"
         }
 
-ExperienceFormSet = inlineformset_factory(Profile, models.Experience, form=ExperienceForm, extra=1)
+ExperienceFormSet = inlineformset_factory(Profile, models.Experience, form=ExperienceForm, can_delete= False, extra=1)
 
 class EducationForm(ModelForm):
     class Meta:

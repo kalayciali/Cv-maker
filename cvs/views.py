@@ -13,6 +13,7 @@ from weasyprint import HTML
 
 # Create your views here.
 
+@login_required
 def manage_cv(request):
     profile = request.user.profile
     if request.method == "POST":
@@ -20,12 +21,15 @@ def manage_cv(request):
         with transaction.atomic():
             if valid_for(all_formsets):
                 return_after_saving(all_formsets)
-                return redirect(showCv)
+                return redirect('index-cvs')
             else:
                 errs = []
                 for formset in all_formsets:
                     errs.append(formset.errors)
-                return redirect('showCv', prof=profile)
+                return render(request, 'cvs/manage_cv.html', {
+                    'errs': errs,
+                    'all_formsets': all_formsets
+                })
     else:
         all_formsets = generate_formsets(request)
         return render(request, 'cvs/manage_cv.html', {
@@ -34,7 +38,7 @@ def manage_cv(request):
 
 def index_cvs(request):
     profile = request.user.profile
-    cv = models.Cv.objects.all()[2]
+    cv = models.Cv.objects.all()[3]
     newHtml = generateHtml(cv.loc_data, cv, profile)
     prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
     prof_cv.save()
