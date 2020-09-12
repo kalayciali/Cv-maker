@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from . import models
 from . import forms
 from accounts.models import Profile
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 import json
 import re
 import os
@@ -41,24 +41,39 @@ def manage_cv(request):
 
 def index_cvs(request):
     profile = request.user.profile
-    cvs = models.Cv.objects.all()
-    cvs_names = []
-    for cv in cvs:
-        newHtml = generateHtml(cv.loc_data, cv, profile)
-        html = HTML(string=newHtml)
-        file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{cv.id}.png'), 'wb+')
-        result = html.write_png(target=file, resolution=40)
-        cvs_names.append(f"cvs/{cv.id}.png")
-    return render(request, 'cvs/index_cvs.html', { 'cvs': cvs_names })
+    first_cv = models.Cv.objects.all()[0]
+    newHtml = generateHtml(first_cv.loc_data, first_cv, profile)
+    html = HTML(string=newHtml)
+    file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{first_cv.id}.png'), 'wb+')
+    html.write_png(target=file, resolution=40)
+    return render(request, 'cvs/index_cvs.html', { 'first_url': f"cvs/{request.user.username}{first_cv.id}.png", })
 
+def generate_image(request):
+    # ajax call
+    idx = request.GET.get('idx', None)
+    try:
+        cv = models.Cv.objects.get(pk=idx)
+        profile = request.user.profile
+        next_html = generateHtml(cv.loc_data, cv, profile)
+        html = HTML(string=next_html)
+        file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{idx}.png'), 'wb+')
+        html.write_png(target=file, resolution=40)
+        next_url = os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{idx}.png')
+    except models.Cv.DoesNotExist:
+        next_url = None
 
-    response = HttpResponse(result, content_type='application/pdf')
+    data = {
+        'img_url': next_url,
+    }
+    return JsonResponse(data)
+
+    #response = HttpResponse(result, content_type='application/pdf')
     #return render(request, 'cvs/index_cvs.html', { 'pdf': result })
     #response['Content-Disposition'] = f'filename={cv.name}.pdf'
-    prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
-    prof_cv.save()
+    #prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
+    #prof_cv.save()
 
-    return response
+    #return response
 
 
 # Helper functions

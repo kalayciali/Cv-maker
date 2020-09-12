@@ -1,8 +1,37 @@
 {% extends 'cvs/home.html' %}
 {% load static %}
 
+{% block title %}
+<h1>Şimdi bütün cvler içinden birini seçebilirsiniz.</h1>
+{% endblock title %}
+
 {% block content %}
-{% for cv in cvs%}
-<img src= "{% static cv%}"></img>
-{% endfor %}
-{% endblock %}
+<img src="{% static first_url %}" id="cv0"></img>
+
+<script type='text/javascript'>
+    var idx = 1
+    old_img_tag = document.getElementById("cv0")
+
+    function recursiveAjax() {
+        const img_tag = document.createElement("img")
+        $.ajax({
+            url: 'ajax/gen_img/',
+            data: { 'idx': idx, } ,
+            dataType: 'json',
+            success: function(data) {
+                if (data.img_url) {
+                    img_tag.src = data.img_url
+                    img_tag.alt = `cv${idx}`
+                    img_tag.id = `cv${idx}`
+                    old_img_tag.after(img_tag)
+                    old_img_tag = img_tag
+                    idx++
+                    recursiveAjax()
+                }
+            } 
+        })
+    }
+
+    $(document).ready( recursiveAjax() )
+</script>
+{% endblock content %}
