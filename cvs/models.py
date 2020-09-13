@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import Profile
+from django.urls import reverse
 
 # Create your models here.
 class Cv(models.Model):
@@ -12,6 +13,7 @@ class Cv(models.Model):
         through='ProfileCv',
         through_fields=('cv', 'profile')
     )
+
 class ProfileCv(models.Model):
     cv = models.ForeignKey(Cv, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)

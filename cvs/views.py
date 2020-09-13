@@ -43,7 +43,7 @@ def index_cvs(request):
     profile = request.user.profile
     first_cv = models.Cv.objects.all()[0]
     newHtml = generateHtml(first_cv.loc_data, first_cv, profile)
-    html = HTML(string=newHtml)
+    html = HTML(string=newHtml, base_url=request.build_absolute_uri("/"))
     file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{first_cv.id}.png'), 'wb+')
     html.write_png(target=file, resolution=40)
     return render(request, 'cvs/index_cvs.html', { 'first_url': f"cvs/{request.user.username}{first_cv.id}.png", })
@@ -55,7 +55,7 @@ def generate_image(request):
         cv = models.Cv.objects.get(pk=idx)
         profile = request.user.profile
         next_html = generateHtml(cv.loc_data, cv, profile)
-        html = HTML(string=next_html)
+        html = HTML(string=next_html, base_url=request.build_absolute_uri('/'))
         file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{idx}.png'), 'wb+')
         html.write_png(target=file, resolution=40)
         next_url = os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{idx}.png')
@@ -67,13 +67,19 @@ def generate_image(request):
     }
     return JsonResponse(data)
 
-    #response = HttpResponse(result, content_type='application/pdf')
-    #return render(request, 'cvs/index_cvs.html', { 'pdf': result })
-    #response['Content-Disposition'] = f'filename={cv.name}.pdf'
-    #prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=newHtml)
-    #prof_cv.save()
+def show_cv(request, idx):
+    cv = models.Cv.objects.get(pk=idx)
+    profile = request.user.profile
+    new_html = generateHtml(cv.loc_data, cv, profile)
+    html = HTML(string=new_html, base_url=request.build_absolute_uri('/'))
+    result = html.write_pdf()
 
-    #return response
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = f'filename={cv.name}.pdf'
+    prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=new_html)
+    prof_cv.save()
+
+    return response
 
 
 # Helper functions
@@ -111,6 +117,7 @@ def generateHtml(locData, cv, prof):
             bar_locs.append(loc)
             # continue until bars finished
             continue
+
 
         if bars:
             for title in bars.keys():
@@ -169,6 +176,7 @@ def generateHtml(locData, cv, prof):
             old_loc = exp_locs[0][1]
             exps = None
 
+
         if (capture == "educ_item" or "educ_" in capture):
             if capture == "educ_item":
                 educs = substit
@@ -189,11 +197,14 @@ def generateHtml(locData, cv, prof):
             old_loc = educ_locs[0][1]
             educs = None
 
+        # before substitution
         if not keys[-1] == capture:
             appendCharTo(new_html_list, old_loc, loc[0], html_temp)
         else:
+            # add last part
             appendCharTo(new_html_list, old_loc, len(html_temp), html_temp)
 
+        # add substitution and move cursor 
         if substit:
             appendAllSrcTo(new_html_list, substit)
         old_loc = loc[1]
@@ -235,7 +246,7 @@ def genRequiredFieldFrom(cv, prof, capture):
         return genHtmlFromUntil(0, len(cv.css), cv.css)
 
     if capture == "img":
-        source = f'{prof.profile_pic}'
+        source = f'media/{prof.profile_pic.name}'
         return genHtmlFromUntil(0, len(source), source)
 
     if capture == "hum_name":
