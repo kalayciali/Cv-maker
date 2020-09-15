@@ -23,7 +23,8 @@ def manage_cv(request):
         all_formsets = generate_formsets(request)
         with transaction.atomic():
             if valid_for(all_formsets):
-                return_after_saving(all_formsets)
+                for formset in all_formsets:
+                    formset.save()
                 return redirect('index-cvs')
             else:
                 errs = []
@@ -371,12 +372,5 @@ def valid_for(formsets):
             if not form.is_valid():
                 return False
     return True
-
-def return_after_saving(formsets):
-    for formset in formsets:
-        formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            obj.delete()
-        formset.save()
 
 

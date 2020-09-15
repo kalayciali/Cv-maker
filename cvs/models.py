@@ -24,8 +24,8 @@ class Experience(models.Model):
     role = models.CharField(max_length=100, blank=True)
     address = models.CharField(max_length=100, blank=True)
     descript = models.TextField(max_length=500, blank=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(blank= True)
+    end_date = models.DateField(blank= True)
     class DecideExp(models.TextChoices):
         EDUC = 'Ed'
         EXP = 'Exp'
@@ -43,7 +43,7 @@ class Experience(models.Model):
 
 class Bar(models.Model):
     name = models.CharField(max_length=100, blank=True)
-    star = models.PositiveSmallIntegerField()
+    star = models.PositiveSmallIntegerField( blank= True )
     class DecideBar(models.TextChoices):
         LANG = 'Lang'
         TECH = 'Tech'
@@ -64,7 +64,7 @@ class Project(models.Model):
 
 class Award(models.Model):
     name = models.CharField(max_length=100, blank=True)
-    date = models.DateField()
+    date = models.DateField(blank= True)
     class DecideAward(models.TextChoices):
         PUBLIC = 'Pub'
         AWARD = 'Award'

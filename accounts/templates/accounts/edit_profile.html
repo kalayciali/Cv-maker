@@ -1,0 +1,11 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+  <h2>Profilini düzenle</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ prof_form.as_p }}
+    <button type="submit">KAYDOL</button>
+  </form>
+{% endblock %}

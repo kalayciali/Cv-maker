@@ -9,5 +9,6 @@ urlpatterns = [
     path('', views.index, name="index"),
     path('register/', views.sign_user, name="sign-up"),
     path('accounts/login/', views.login_user, name="login-user"),
-    path('accounts/logout/', views.logout_user, name="logout-user")
+    path('accounts/logout/', views.logout_user, name="logout-user"),
+    url(r'^accounts/edit/(?P<pk>\d+)/$', views.edit_profile, name="edit-user")
 ]

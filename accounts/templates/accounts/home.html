@@ -3,13 +3,21 @@
 <div class="jumbotron">
   <div class="container">
     <h1>Bi çay içimi hızında CV</h1>
-    <p>
-      CV'ye mi ihtiyacın var. Sen çayını içerken biz CV'ni hazırlayalım!<br />
-      Aşağıdaki kutucuğa tıkla. Bilgilerini gir ve onlarca tema arasından birini seç.<br/>
-      Herşey bu kadar kolay. Bize de bi çay ısmarlarsın artık!
-    </p>
-    <br />
-    <p><a class="btn btn-primary btn-lg" href="{% url 'manage-cv' %}">Formu doldur</a></p>
+    {% if user.is_authenticated %}
+        <p>
+            Şu anda profil bilgilerini tamamladın. Sırada eğitim, iş ve yeteneklerini doldurmalısın. Sakın yanlış anlama! Tek derdimiz senin efsane bir cv'ye sahip olabilmen! Daha sonra bilgilerini istediğin zaman profil bölümünden değiştirebilirsin. 
+        </p>
+        <br />
+        <p><a class="btn btn-primary btn-lg" href="{% url 'manage-cv' %}">Buradan devam</a></p>
+    {% else %}
+        <p>
+          CV'ye mi ihtiyacın var. Sen çayını içerken biz CV'ni hazırlayalım!<br />
+          Aşağıdaki kutucuğa tıkla. Bilgilerini gir ve onlarca tema arasından birini seç.<br/>
+          Herşey bu kadar kolay. Bize de bi çay ısmarlarsın artık!
+        </p>
+        <br />
+        <p><a class="btn btn-primary btn-lg" href="{% url 'accounts:sign-up' %}">Formu doldurmaya Başla</a></p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -10,11 +10,10 @@
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <ul class="nav navbar-nav">
-{# Django Home Link / Admin Link / Register Link#}
           <li><a class="navbar-brand" href="{% url 'accounts:index' %}">CayCV</a></li>
-          {# Some logic on what to display for last item#}
           {% if user.is_authenticated %}
             <li><a href="{% url 'accounts:logout-user' %}">Çıkış yap</a></li>
+            <li><a href="{% url 'accounts:edit-user' user.id %}">Profil Düzenle</a></li>
           {% else %}
           <li><a class="navbar-link" href="{% url 'accounts:sign-up' %}">Kaydol</a></li>
             <li><a class="navbar-link" href="{% url 'accounts:login-user' %}">Giriş</a></li>

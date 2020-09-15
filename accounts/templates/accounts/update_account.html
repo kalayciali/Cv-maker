@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-  <h2>Sign up</h2>
+  <h2>Bilgilerinizi değiştirebilirsiniz</h2>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% for field in form %}
@@ -13,6 +13,6 @@
         {% endfor %}
       </p>
     {% endfor %}
-    <button type="submit">KAYDOL</button>
+    <button type="submit">Güncelle</button>
   </form>
 {% endblock %}

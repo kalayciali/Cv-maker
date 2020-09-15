@@ -6,25 +6,36 @@
 {% endblock title %}
 
 {% block content %}
-<img src="{% static first_url %}" id="cv0"></img>
+<div class="cv0">
+    <div class="img-title">
+        <p>Kurt Gödel</p>
+    </div>
+    <img src="{% static first_url %}" id="cv0"></img>
+
+</div>
 
 <script type='text/javascript'>
+
     var idx = 1
-    old_img_tag = document.getElementById("cv0")
+    let old_div_tag = document.getElementByClassName("cv0")
+    let titles = [ "Marie Curie",  ]
 
     function recursiveAjax() {
-        const img_tag = document.createElement("img")
+        const div_tag = old_div_tag.cloneNode(true);
         $.ajax({
             url: 'ajax/gen_img/',
             data: { 'idx': idx, } ,
             dataType: 'json',
             success: function(data) {
                 if (data.img_url) {
+                    div_tag.querySelector("p").innerHTML = titles[idx]
+                    img_tag = div_tag.querySelector("img")
                     img_tag.src = data.img_url
                     img_tag.alt = `cv${idx}`
                     img_tag.id = `cv${idx}`
-                    old_img_tag.after(img_tag)
-                    old_img_tag = img_tag
+
+                    old_div_tag.after(div_tag)
+                    old_div_tag = div_tag
                     idx++
                     recursiveAjax()
                 }

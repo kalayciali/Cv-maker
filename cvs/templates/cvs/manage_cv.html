@@ -24,7 +24,6 @@
 </form>
 <script type='text/javascript'>
 
-    var counter = 1
 
     function updateElemIndex(el, prefix, new_i) {
         var id_regex = new RegExp('(' + prefix + '-\\d+)');
@@ -36,14 +35,18 @@
 
     function cloneMore(selector, prefix, target) {
         var newElement = target.closest(selector).cloneNode(true);
-        target.parentElement.className = prefix + "-" + String(counter)
-        counter++
         var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
-        $(newElement).find(':input:not(button):not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        change_list = $(newElement).find(':input:not(button):not([type=button]):not([type=submit]):not([type=reset])')
+        change_list.not(":last").each(function() {
             var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
             var id = 'id_' + name;
-            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            $(this).attr({'name': name, 'id': id}).val('')
         });
+        // val attr of last item is profile id it needs to stay same
+
+        var name = change_list.last().attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+        var id = 'id_' + name;
+        change_list.last().attr({ 'name': name, 'id': id })
         $(newElement).find('label').each(function() {
             var forValue = $(this).attr('for');
             if (forValue) {
