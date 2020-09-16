@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Prefetch
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -20,7 +21,7 @@ from weasyprint import HTML
 def manage_cv(request):
     profile = request.user.profile
     if request.method == "POST":
-        all_formsets = generate_formsets(request)
+        all_formsets = generate_formsets(request, profile)
         with transaction.atomic():
             if valid_for(all_formsets):
                 for formset in all_formsets:
@@ -35,14 +36,15 @@ def manage_cv(request):
                     'all_formsets': all_formsets
                 })
     else:
-        all_formsets = generate_formsets(request)
+        all_formsets = generate_formsets(request, profile)
         return render(request, 'cvs/manage_cv.html', {
             'all_formsets': all_formsets
         })
 
+@login_required
 def index_cvs(request):
     profile = request.user.profile
-    first_cv = models.Cv.objects.all()[0]
+    first_cv = models.Cv.objects.get(pk=0)
     newHtml = generateHtml(first_cv.loc_data, first_cv, profile)
     html = HTML(string=newHtml, base_url=request.build_absolute_uri("/"))
     file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{first_cv.id}.png'), 'wb+')
@@ -68,6 +70,33 @@ def generate_image(request):
     }
     return JsonResponse(data)
 
+@login_required
+def info_cv(request):
+    user = request.user
+    profile_id = request.user.profile.id
+    lang_queryset = models.Bar.objects.filter(decider='Lang')
+    tech_queryset = models.Bar.objects.filter(decider='Tech')
+    skill_queryset = models.Bar.objects.filter(decider='Skill')
+    exp_queryset = models.Experience.objects.filter(decider='Exp')
+    educ_queryset = models.Experience.objects.filter(decider='Ed')
+    award_queryset = models.Award.objects.filter(decider='Award')
+    public_queryset = models.Award.objects.filter(decider='Pub')
+    prof_with_all_fields = Profile.objects.filter(id=profile_id).prefetch_related(
+        Prefetch("experience_set", queryset=exp_queryset, to_attr='prefetched_exps'),
+        Prefetch("experience_set", queryset=educ_queryset, to_attr='prefetched_educs'),
+        Prefetch("bar_set", queryset=lang_queryset, to_attr='prefetched_langs'),
+        Prefetch("bar_set", queryset=tech_queryset, to_attr='prefetched_techs'),
+        Prefetch("bar_set", queryset=skill_queryset, to_attr='prefetched_skills'),
+        Prefetch("award_set", queryset=award_queryset, to_attr='prefetched_awards'),
+        Prefetch("award_set", queryset=public_queryset, to_attr='prefetched_publics'),
+        Prefetch("project_set", to_attr='prefetched_projects')
+    )
+    return render(request, 'cvs/info_cv.html', {
+        'user': user,
+        'prof_with_all_fields': prof_with_all_fields
+        })
+
+@login_required
 def show_cv(request, idx):
     cv = models.Cv.objects.get(pk=idx)
     profile = request.user.profile
@@ -79,11 +108,80 @@ def show_cv(request, idx):
     response['Content-Disposition'] = f'filename={cv.name}.pdf'
     prof_cv = models.ProfileCv(profile=profile, cv=cv, new_html=new_html)
     prof_cv.save()
-
     return response
 
 
+
 # Helper functions
+
+def generate_formsets(request, profile):
+    all_formsets = []
+    if request.method == "POST":
+        exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
+        all_formsets.append(exp_formset)
+
+        ed_formset = forms.EducationFormSet(request.POST, instance=profile, prefix='educations')
+        all_formsets.append(ed_formset)
+
+        lang_formset = forms.LangFormSet(request.POST, instance=profile, prefix='languages')
+        all_formsets.append(lang_formset)
+
+        tech_formset = forms.TechFormSet(request.POST, instance=profile, prefix='techs')
+        all_formsets.append(tech_formset)
+
+        skill_formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
+        all_formsets.append(skill_formset)
+
+        award_formset = forms.AwardFormSet(request.POST, instance=profile, prefix='awards')
+        all_formsets.append(award_formset)
+
+        public_formset = forms.PublicFormSet(request.POST, instance=profile, prefix="publications")
+        all_formsets.append(public_formset)
+
+        project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
+        all_formsets.append(project_formset)
+
+    else:
+        exp_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
+            {'decider': 'Exp',}
+        ] )
+        all_formsets.append(exp_formset)
+
+        ed_formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
+            { 'decider': 'Ed',}
+        ] )
+        all_formsets.append(ed_formset)
+
+        lang_formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
+            { 'decider': 'Lang', }
+        ] )
+        all_formsets.append(lang_formset)
+
+        tech_formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
+            { 'decider': 'Tech', }
+        ] )
+        all_formsets.append(tech_formset)
+
+        skill_formset = forms.SkillFormSet( instance=profile, prefix='skills', initial=[
+            { 'decider': 'Skill', }
+        ] )
+        all_formsets.append(skill_formset)
+
+        award_formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
+            { 'decider': 'Award' }
+        ] )
+        all_formsets.append(award_formset)
+
+        public_formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
+            { 'decider': 'Pub' }
+        ] )
+        all_formsets.append(public_formset)
+
+        project_formset = forms.ProjectFormSet( instance=profile, prefix="projects" )
+        all_formsets.append(project_formset)
+
+    return all_formsets
+
 
 def generateHtml(locData, cv, prof):
     loc_data = json.loads(locData, object_pairs_hook=OrderedDict)
@@ -294,77 +392,6 @@ def genRequiredFieldFrom(cv, prof, capture):
     if capture == "educ_item":
         return exp_groupby['Ed']
 
-
-
-
-def generate_formsets(request):
-    profile = request.user.profile
-    all_formsets = []
-    if request.method == "POST":
-        exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
-        all_formsets.append(exp_formset)
-
-        ed_formset = forms.EducationFormSet(request.POST, instance=profile, prefix='educations')
-        all_formsets.append(ed_formset)
-
-        lang_formset = forms.LangFormSet(request.POST, instance=profile, prefix='languages')
-        all_formsets.append(lang_formset)
-
-        tech_formset = forms.TechFormSet(request.POST, instance=profile, prefix='techs')
-        all_formsets.append(tech_formset)
-
-        skill_formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
-        all_formsets.append(skill_formset)
-
-        award_formset = forms.AwardFormSet(request.POST, instance=profile, prefix='awards')
-        all_formsets.append(award_formset)
-
-        public_formset = forms.PublicFormSet(request.POST, instance=profile, prefix="publications")
-        all_formsets.append(public_formset)
-
-        project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
-        all_formsets.append(project_formset)
-
-    else:
-        exp_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
-            {'decider': 'Exp',}
-        ] )
-        all_formsets.append(exp_formset)
-
-        ed_formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
-            { 'decider': 'Ed',}
-        ] )
-        all_formsets.append(ed_formset)
-
-        lang_formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
-            { 'decider': 'Lang', }
-        ] )
-        all_formsets.append(lang_formset)
-
-        tech_formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
-            { 'decider': 'Tech', }
-        ] )
-        all_formsets.append(tech_formset)
-
-        skill_formset = forms.SkillFormSet( instance=profile, prefix='skills', initial=[
-            { 'decider': 'Skill', }
-        ] )
-        all_formsets.append(skill_formset)
-
-        award_formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
-            { 'decider': 'Award' }
-        ] )
-        all_formsets.append(award_formset)
-
-        public_formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
-            { 'decider': 'Pub' }
-        ] )
-        all_formsets.append(public_formset)
-
-        project_formset = forms.ProjectFormSet( instance=profile, prefix="projects" )
-        all_formsets.append(project_formset)
-
-    return all_formsets
 
 def valid_for(formsets):
     for formset in formsets:

@@ -6,8 +6,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    re_path(r'$', views.manage_cv, name='manage-cv'),
-    re_path(r'index/$', views.index_cvs, name='index-cvs'),
-    re_path(r'index/ajax/gen_img/$', views.generate_image, name='gen-img'),
-    re_path(r'show/(?P<idx>\d+)/$', views.show_cv, name='show-cv')
+    url(r'inform/$', views.info_cv, name='info-cv'),
+    url(r'index/$', views.index_cvs, name='index-cvs'),
+    url(r'index/ajax/gen_img/$', views.generate_image, name='gen-img'),
+    url(r'show/(?P<idx>\d+)/$', views.show_cv, name='show-cv'),
+    url(r'$', views.manage_cv, name='manage-cv'),
 ]

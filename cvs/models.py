@@ -14,6 +14,9 @@ class Cv(models.Model):
         through_fields=('cv', 'profile')
     )
 
+    def __str__(self):
+        return self.name
+
 class ProfileCv(models.Model):
     cv = models.ForeignKey(Cv, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -34,7 +37,7 @@ class Experience(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return f'{self.profile}{self.name}'
 
     class Meta:
         ordering = [ 'end_date' ]
@@ -51,6 +54,9 @@ class Bar(models.Model):
     decider = models.CharField(choices=DecideBar.choices, max_length=10)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.profile}{self.decider}{self.name}'
+
     class Meta:
         verbose_name = "Bar"
         verbose_name_plural = "Bars"
@@ -62,6 +68,9 @@ class Project(models.Model):
     descript = models.TextField(max_length=500, blank=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.profile}{self.name}'
+
 class Award(models.Model):
     name = models.CharField(max_length=100, blank=True)
     date = models.DateField(blank= True)
@@ -70,6 +79,10 @@ class Award(models.Model):
         AWARD = 'Award'
     decider = models.CharField(choices=DecideAward.choices, max_length=10)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.profile}{self.name}'
+
     class Meta:
         verbose_name = "Award"
         verbose_name_plural = "Awards"

@@ -41,18 +41,19 @@ def sign_user(request):
 
 @login_required
 def edit_profile(request, pk):
+    user = request.user
     if request.method == 'POST':
-        userprof_form = EditUserProfile(request.POST, instance=request.user)
-        prof_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        userprof_form = EditUserProfile(request.POST, instance=user)
+        prof_form = ProfileForm(request.POST, request.FILES, instance=user.profile)
         if userprof_form.is_valid() and prof_form.is_valid():
-            user = userprof_form.save()
+            user_form = userprof_form.save()
             prof_form = prof_form.save(False)
-            prof_form.user = user
+            prof_form.user = user_form
             prof_form.save()
-            return redi
+            return redirect(reverse('', args=(user.id, )))
     else:
-        user_form = EditUserProfile(instance=request.user)
-        prof_form = ProfileForm(instance=request.user.profile)
+        user_form = EditUserProfile(instance=user)
+        prof_form = ProfileForm(instance=user.profile)
         return render(request, 'accounts/edit_profile.html', {
             'user_form': user_form,
             'prof_form': prof_form
