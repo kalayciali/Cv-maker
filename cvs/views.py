@@ -44,7 +44,7 @@ def manage_cv(request):
 @login_required
 def index_cvs(request):
     profile = request.user.profile
-    first_cv = models.Cv.objects.get(pk=0)
+    first_cv = models.Cv.objects.get(id=18)
     newHtml = generateHtml(first_cv.loc_data, first_cv, profile)
     html = HTML(string=newHtml, base_url=request.build_absolute_uri("/"))
     file = open(os.path.join(settings.BASE_DIR,  f'cvs/static/cvs/{request.user.username}{first_cv.id}.png'), 'wb+')
@@ -185,9 +185,8 @@ def generate_formsets(request, profile):
 
 def generateHtml(locData, cv, prof):
     loc_data = json.loads(locData, object_pairs_hook=OrderedDict)
-    keys = list(loc_data.keys())
     # locations as list [[start_idx, end_idx], ..]
-    locs = list(loc_data.values())
+    # loc_data arranged in such a way that it has unimportant loc item between multiple number items such as experience, educ, award in order to follow the order of them
     html_temp = cv.html
     new_html_list = []
     old_loc = 0
@@ -196,17 +195,21 @@ def generateHtml(locData, cv, prof):
     link_locs = []
     exp_locs = []
     educ_locs = []
+    project_locs = []
+    award_locs = []
+
     bars = None
     links = None
     exps = None
     educs = None
+    projects = None
+    awards = None
 
 
-    for i in range(len(keys)):
+    for capture in loc_data:
 
-        capture = keys[i]
         substit = genRequiredFieldFrom(cv, prof, capture)
-        loc = locs[i]
+        loc = loc_data[capture]
 
         if (capture == "hum_bar" or "bar_" in capture ):
             if capture == "hum_bar":
@@ -217,7 +220,6 @@ def generateHtml(locData, cv, prof):
             # continue until bars finished
             continue
 
-
         if bars:
             for title in bars.keys():
                 appendCharTo(new_html_list, bar_locs[0][0], bar_locs[1][0], html_temp)
@@ -225,12 +227,19 @@ def generateHtml(locData, cv, prof):
                 appendCharTo(new_html_list, bar_locs[1][1], bar_locs[2][0], html_temp)
                 for bar in bars[title]:
                     appendCharTo(new_html_list, bar_locs[2][0], bar_locs[3][0], html_temp)
-                    appendAfterGen(new_html_list, bar.name)
-                    appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
-                    appendAfterGen(new_html_list, f"width: {bar.star}%;")
-                    appendCharTo(new_html_list, bar_locs[4][1], bar_locs[5][0], html_temp)
-                    appendAfterGen(new_html_list, f"{bar.star}%")
-                    appendCharTo(new_html_list, bar_locs[5][1], bar_locs[2][1], html_temp)
+                    if len(bar_locs) > 5:
+                        appendAfterGen(new_html_list, bar.name)
+                        appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
+                        appendAfterGen(new_html_list, f"width: {bar.star}%;")
+                        appendCharTo(new_html_list, bar_locs[4][1], bar_locs[5][0], html_temp)
+                        appendAfterGen(new_html_list, f"{bar.star}%")
+                        appendCharTo(new_html_list, bar_locs[5][1], bar_locs[2][1], html_temp)
+                    else:
+                        appendAllSrcTo(new_html_list,barStyle(title))
+                        appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
+                        appendAfterGen(new_html_list, bar.name)
+                        appendCharTo(new_html_list, bar_locs[4][1], bar_locs[2][1], html_temp)
+
                 appendCharTo(new_html_list, bar_locs[2][1], bar_locs[0][1], html_temp)
             old_loc = bar_locs[0][1]
             bars = None
@@ -281,8 +290,7 @@ def generateHtml(locData, cv, prof):
                 educs = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             educ_locs.append(loc)
-            if not keys[-1] == capture:
-                continue
+            continue
 
         if educs:
             for educ in educs:
@@ -296,17 +304,54 @@ def generateHtml(locData, cv, prof):
             old_loc = educ_locs[0][1]
             educs = None
 
-        # before substitution
-        if not keys[-1] == capture:
-            appendCharTo(new_html_list, old_loc, loc[0], html_temp)
-        else:
-            # add last part
-            appendCharTo(new_html_list, old_loc, len(html_temp), html_temp)
+        if (capture == "project_item" or "project_" in capture):
+            if capture == "project_item":
+                projects = substit
+                appendCharTo(new_html_list, old_loc, loc[0], html_temp)
+            project_locs.append(loc)
+            continue
 
-        # add substitution and move cursor 
+        if projects:
+            for project in projects:
+                appendCharTo(new_html_list, project_locs[0][0], project_locs[1][0], html_temp)
+                appendAfterGen(new_html_list, project.name )
+                appendCharTo(new_html_list, project_locs[1][1], project_locs[2][0], html_temp)
+                appendAfterGen(new_html_list, project.role)
+                appendCharTo(new_html_list, project_locs[2][1], project_locs[3][0], html_temp)
+                appendAfterGen(new_html_list, project.descript)
+                appendCharTo(new_html_list, project_locs[3][1], project_locs[0][1], html_temp)
+            old_loc = project_locs[0][1]
+            projects = None
+
+        if (capture == "award_item" or "award_" in capture):
+            if capture == "award_item":
+                awards = substit
+                appendCharTo(new_html_list, old_loc, loc[0], html_temp)
+            award_locs.append(loc)
+            continue
+
+        if awards:
+            for award in awards:
+                appendCharTo(new_html_list, award_locs[0][0], award_locs[1][0], html_temp)
+                appendAfterGen(new_html_list, award.name )
+                appendCharTo(new_html_list, award_locs[1][1], award_locs[2][0], html_temp)
+                appendAfterGen(new_html_list, award.date.strftime("%Y"))
+                appendCharTo(new_html_list, award_locs[2][1], award_locs[0][1], html_temp)
+            old_loc = award_locs[0][1]
+            awards = None
+
+        # before substitution
+        appendCharTo(new_html_list, old_loc, loc[0], html_temp)
+
+        # substitution
         if substit:
             appendAllSrcTo(new_html_list, substit)
+            # move cursor after substitution
+        else:
+            appendCharTo(new_html_list, loc[0], loc[1], html_temp)
+
         old_loc = loc[1]
+
 
     new_html = "".join(new_html_list)
     return new_html
@@ -333,6 +378,15 @@ def linkStyle(name):
         source = "fa-twitter"
     if name == "linkedin":
         source = "fa-linkedin"
+    return genHtmlFromUntil(0, len(source), source)
+
+def barStyle(name):
+    if name == "Skill":
+        source = "fas fa-check-double"
+    if name == "Tech":
+        source = "fab fa-linux"
+    else:
+        source = "fas fa-globe"
     return genHtmlFromUntil(0, len(source), source)
 
 
@@ -370,6 +424,14 @@ def genRequiredFieldFrom(cv, prof, capture):
         for val in bar_val_list:
             bar_groupby[val] = prof.bar_set.filter(decider=val)
         return bar_groupby
+    
+    if capture == "project_item":
+        project_all = prof.project_set.all()
+        return project_all
+
+    if capture == "award_item":
+        award_all = prof.award_set.all()
+        return award_all
 
     if capture == "link_item":
         links = prof.links

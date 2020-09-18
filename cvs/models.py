@@ -40,7 +40,7 @@ class Experience(models.Model):
         return f'{self.profile}{self.name}'
 
     class Meta:
-        ordering = [ 'end_date' ]
+        ordering = [ 'decider' ]
         verbose_name = "Experience"
         verbose_name_plural = "Experiences"
 
@@ -58,6 +58,7 @@ class Bar(models.Model):
         return f'{self.profile}{self.decider}{self.name}'
 
     class Meta:
+        ordering = ['decider']
         verbose_name = "Bar"
         verbose_name_plural = "Bars"
 
@@ -84,6 +85,7 @@ class Award(models.Model):
         return f'{self.profile}{self.name}'
 
     class Meta:
+        ordering = [ 'decider' ]
         verbose_name = "Award"
         verbose_name_plural = "Awards"
 
