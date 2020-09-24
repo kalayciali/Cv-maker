@@ -215,6 +215,8 @@ def generateHtml(locData, cv, prof):
             if capture == "hum_bar":
                 bars = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
+            if capture == "bar_style_without_num":
+                otherStyle = True
 
             bar_locs.append(loc)
             # continue until bars finished
@@ -235,10 +237,16 @@ def generateHtml(locData, cv, prof):
                         appendAfterGen(new_html_list, f"{bar.star}%")
                         appendCharTo(new_html_list, bar_locs[5][1], bar_locs[2][1], html_temp)
                     else:
-                        appendAllSrcTo(new_html_list,barStyle(title))
-                        appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
-                        appendAfterGen(new_html_list, bar.name)
-                        appendCharTo(new_html_list, bar_locs[4][1], bar_locs[2][1], html_temp)
+                        if otherStyle:
+                            appendAfterGen(new_html_list, bar.name)
+                            appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
+                            appendAfterGen(new_html_list, f"width: {bar.star}%;")
+                            appendCharTo(new_html_list, bar_locs[4][1], bar_locs[2][1], html_temp)
+                        else:
+                            appendAllSrcTo(new_html_list,barStyle(title))
+                            appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
+                            appendAfterGen(new_html_list, bar.name)
+                            appendCharTo(new_html_list, bar_locs[4][1], bar_locs[2][1], html_temp)
 
                 appendCharTo(new_html_list, bar_locs[2][1], bar_locs[0][1], html_temp)
             old_loc = bar_locs[0][1]
@@ -383,7 +391,7 @@ def linkStyle(name):
 def barStyle(name):
     if name == "Skill":
         source = "fas fa-check-double"
-    if name == "Tech":
+    elif name == "Tech":
         source = "fab fa-linux"
     else:
         source = "fas fa-globe"
@@ -404,6 +412,9 @@ def genRequiredFieldFrom(cv, prof, capture):
 
     if capture == "hum_name":
         source = f'{prof.user.first_name} {prof.user.last_name}'
+        return genHtmlFromUntil(0, len(source), source)
+    if capture == "hum_mail":
+        source = f'{prof.user.email}'
         return genHtmlFromUntil(0, len(source), source)
 
     if capture == "prof_bullet":
