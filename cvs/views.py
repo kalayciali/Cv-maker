@@ -7,6 +7,7 @@ from . import models
 from . import forms
 from accounts.models import Profile
 from django.http import HttpResponse, FileResponse, JsonResponse
+from django.template.loader import render_to_string
 import json
 import re
 import os
@@ -36,10 +37,59 @@ def manage_cv(request):
                     'all_formsets': all_formsets
                 })
     else:
-        all_formsets = generate_formsets(request, profile)
+        first_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
+            {'decider': 'Exp',}
+        ] )
         return render(request, 'cvs/manage_cv.html', {
-            'all_formsets': all_formsets
+            'formset': first_formset
         })
+
+def generate_form(request):
+    # ajax call
+    form_title = request.GET.get('title', None)
+    profile = request.user.profile
+
+    if form_title == "Eğitimler":
+        formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
+            { 'decider': 'Ed',}
+        ] )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    if form_title == "Projeler":
+        formset = forms.ProjectFormSet( instance=profile, prefix="projects" )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
+        
+    if form_title == "Diller":
+        formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
+            { 'decider': 'Lang', }
+        ] )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
+
+    if form_title == "Teknoloji":
+        formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
+            { 'decider': 'Tech', }
+        ] )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    if form_title == "Yetenekler":
+        formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    if form_title == "Ödüller":
+        formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
+            { 'decider': 'Award' }
+        ] )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
+
+    if form_title == "Yayın-Sertifika":
+        formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
+            { 'decider': 'Pub' }
+        ] )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    data = { 'form_html': form_as_str }
+    return JsonResponse(data)
+
 
 @login_required
 def index_cvs(request):
@@ -116,69 +166,29 @@ def show_cv(request, idx):
 
 def generate_formsets(request, profile):
     all_formsets = []
-    if request.method == "POST":
-        exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
-        all_formsets.append(exp_formset)
+    exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
+    all_formsets.append(exp_formset)
 
-        ed_formset = forms.EducationFormSet(request.POST, instance=profile, prefix='educations')
-        all_formsets.append(ed_formset)
+    ed_formset = forms.EducationFormSet(request.POST, instance=profile, prefix='educations')
+    all_formsets.append(ed_formset)
 
-        lang_formset = forms.LangFormSet(request.POST, instance=profile, prefix='languages')
-        all_formsets.append(lang_formset)
+    lang_formset = forms.LangFormSet(request.POST, instance=profile, prefix='languages')
+    all_formsets.append(lang_formset)
 
-        tech_formset = forms.TechFormSet(request.POST, instance=profile, prefix='techs')
-        all_formsets.append(tech_formset)
+    tech_formset = forms.TechFormSet(request.POST, instance=profile, prefix='techs')
+    all_formsets.append(tech_formset)
 
-        skill_formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
-        all_formsets.append(skill_formset)
+    skill_formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
+    all_formsets.append(skill_formset)
 
-        award_formset = forms.AwardFormSet(request.POST, instance=profile, prefix='awards')
-        all_formsets.append(award_formset)
+    award_formset = forms.AwardFormSet(request.POST, instance=profile, prefix='awards')
+    all_formsets.append(award_formset)
 
-        public_formset = forms.PublicFormSet(request.POST, instance=profile, prefix="publications")
-        all_formsets.append(public_formset)
+    public_formset = forms.PublicFormSet(request.POST, instance=profile, prefix="publications")
+    all_formsets.append(public_formset)
 
-        project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
-        all_formsets.append(project_formset)
-
-    else:
-        exp_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
-            {'decider': 'Exp',}
-        ] )
-        all_formsets.append(exp_formset)
-
-        ed_formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
-            { 'decider': 'Ed',}
-        ] )
-        all_formsets.append(ed_formset)
-
-        lang_formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
-            { 'decider': 'Lang', }
-        ] )
-        all_formsets.append(lang_formset)
-
-        tech_formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
-            { 'decider': 'Tech', }
-        ] )
-        all_formsets.append(tech_formset)
-
-        skill_formset = forms.SkillFormSet( instance=profile, prefix='skills', initial=[
-            { 'decider': 'Skill', }
-        ] )
-        all_formsets.append(skill_formset)
-
-        award_formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
-            { 'decider': 'Award' }
-        ] )
-        all_formsets.append(award_formset)
-
-        public_formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
-            { 'decider': 'Pub' }
-        ] )
-        all_formsets.append(public_formset)
-
-        project_formset = forms.ProjectFormSet( instance=profile, prefix="projects" )
-        all_formsets.append(project_formset)
+    project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
+    all_formsets.append(project_formset)
 
     return all_formsets
 

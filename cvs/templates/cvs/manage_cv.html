@@ -1,29 +1,86 @@
 {% extends 'cvs/home.html' %}
 
 {% block content %}
-<form class="form-horizontal" method="post" action="">
-    {% for formset in all_formsets %}
+    <ul>
+        <li><button class="clickme">Deneyimler</button></li>
+        <li><button class="clickme">Eğitimler</button></li>
+        <li><button class="clickme">Projeler</button></li>
+        <li><button class="clickme">Diller</button></li>
+        <li><button class="clickme">Teknoloji</button></li>
+        <li><button class="clickme">Yetenekler</button></li>
+        <li><button class="clickme">Ödüller</button></li>
+        <li><button class="clickme">Yayın-Sertifika</button></li>
+    </ul>
+    <form class="form-horizontal" method="post" action="">
         {% csrf_token %}
-        {{ formset.management_form }}
-        {% for form in formset %}
-        <div class="row form-row spacer">
-            <div class="col-6">
-                {{form.as_p}}
+        <div class="Deneyimler">
+            {{ formset.management_form }}
+            {% for form in formset %}
+            <div class="row form-row">
+                <div class="col-6">
+                    {{form.as_p}}
+                </div>
+                <div class="{{form.prefix}}">
+                    <button class="btn btn-success add-new-form">Yeni Ekle</button>
+                </div>
+            {% endfor %}
             </div>
-            <div class="{{form.prefix}}">
-                <button class="btn btn-success add-new-form">Yeni Ekle</button>
+        </div>
+        <div class="row">
+            <div class="col-4 offset-2">
+                <button type="submit" class="btn btn-block btn-primary">CV seç</button>
             </div>
-        {% endfor %}
         </div>
-    {% endfor %}
-    <div class="row spacer">
-        <div class="col-4 offset-2">
-            <button type="submit" class="btn btn-block btn-primary">CV seç</button>
-        </div>
-    </div>
-</form>
+    </form>
+
 <script type='text/javascript'>
 
+    let title_array = document.getElementsByClassName("clickme")
+    var i = 1
+    let old_elem = document.getElementsByClassName("Deneyimler")[0]
+    let divs = [ old_elem,  ]
+
+    function createElementFromHTML(htmlString) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+
+        return div.firstChild;
+    }
+    
+    function ajaxLoad() {
+        $.ajax({
+            url: 'ajax/gen_form/',
+            data: { 'title': title_array[i].innerHTML },
+            dataType: 'json',
+            success: function(data) {
+                new_elem = createElementFromHTML(data.form_html)
+                $(old_elem).after(new_elem)
+                divs.push(new_elem)
+                old_elem = new_elem
+                i++
+                if (i < title_array.length) {
+                    ajaxLoad()
+                }
+            }
+        })
+
+    }
+
+    $(document).ready( ajaxLoad() )
+
+    $( ".clickme" ).click(function() {
+        let target = document.getElementsByClassName($(this).html())[0]
+
+        if ( $(target).is( ":hidden" ) ) {
+            $(target).slideDown();
+        }
+
+        for (elem of divs) {
+            if (elem != target) {
+                $(elem).hide()
+            }
+        }
+    });
 
     function updateElemIndex(el, prefix, new_i) {
         var id_regex = new RegExp('(' + prefix + '-\\d+)');
