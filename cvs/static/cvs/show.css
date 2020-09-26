@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif&display=swap');
+
+
+body {
+    font-size: 15px;
+    line-height: 20px;
+    font-family: 'PT Serif', serif;
+	color: #282724;
+    text-align: justify;
+}
+.container {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(6, 1fr);
+grid-column-gap: 0px;
+grid-row-gap: 0px;
+}
+
+.names { grid-area: 1 / 1 / 7 / 2; }
+.experiences{ grid-area: 2 / 2 / 3 / 5; }
+.educations { grid-area: 3 / 2 / 4 / 5; }
+.bars { grid-area: 4 / 2 / 5 / 5; }
+.projects { grid-area: 5 / 2 / 6 / 5; }
+.papers { grid-area: 6 / 2 / 7 / 5; }
+.profile { grid-area: 1 / 2 / 2 / 5; }
+.profile-form { grid-area: 1 / 5 / 2 / 6; }
+.others-form{ grid-area: 2 / 5 / 7 / 6; }
+.profile .prof-img {
+    float: left;
+    width: 33%;
+}
+.profile .prof-info {
+    float: left;
+    width: 33%;
+}
+.profile .prof-exp {
+    float: right;
+    width: 34%;
+}
+.experiences .exp-info {
+    float: left;
+    width: 30%;
+}
+.experiences .exp-desc {
+    float: right;
+    width: 70%;
+}
+.educations .educ-info {
+    float: left;
+    width: 30%;
+}
+.educations .educ-desc {
+    float: right;
+    width: 70%;
+}
+.bars .technologies {
+    float: left;
+    width: 33.3%;
+}
+.bars .languages {
+    float: left;
+    width: 33.3%;
+}
+.bars .skills {
+    float: right;
+    width: 33.4%;
+}
+.projects .project-info {
+    float: left;
+    width: 30%;
+}
+.projects .project-desc {
+    float: right;
+    width: 70%;
+}
+.papers .awards {
+    float: left;
+    width: 50%;
+}
+.papers .publications {
+    float: left;
+    width: 50%;
+}
+
+.h1 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-weight: normal;
+    font-family: 'PT Serif', serif;
+	font-size: 36px;
+	line-height: 42px;
+	text-transform: uppercase;
+	text-shadow: 0 2px white, 0 3px #777;
+}
+
+.h2 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-weight: normal;
+	font-size: 30px;
+	line-height: 40px;
+    font-family: 'PT Serif', serif;
+}
+
+.h3 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-size: 22px;
+	line-height: 40px;
+	font-weight: normal;
+	text-transform: uppercase;
+    font-family: 'PT Serif', serif;
+	letter-spacing: 1px;
+	font-style: italic;
+}
+
+.h4 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-size: 18px;
+	line-height: 20px;
+	font-weight: normal;
+    font-family: 'PT Serif', serif;
+}

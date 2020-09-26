@@ -1,0 +1,74 @@
+
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif&display=swap');
+
+body {
+    font-size: 15px;
+    line-height: 20px;
+    font-family: 'PT Serif', serif;
+	color: #282724;
+ul {
+    list-style: none;
+}
+
+.h1 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-weight: normal;
+    font-family: 'PT Serif', serif;
+	font-size: 36px;
+	line-height: 42px;
+	text-transform: uppercase;
+	text-shadow: 0 2px white, 0 3px #777;
+}
+
+.h2 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-weight: normal;
+	font-size: 30px;
+	line-height: 40px;
+    font-family: 'PT Serif', serif;
+}
+
+.h3 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-size: 22px;
+	line-height: 40px;
+	font-weight: normal;
+	text-transform: uppercase;
+    font-family: 'PT Serif', serif;
+	letter-spacing: 1px;
+	font-style: italic;
+}
+
+.h4 {
+	margin: 1em 0 0.5em 0;
+	color: #343434;
+	font-size: 18px;
+	line-height: 20px;
+	font-weight: normal;
+    font-family: 'PT Serif', serif;
+}
+
+* {
+    list-style: none;
+}
+#menu-outer {
+	height: 84px;
+}
+
+.table {
+	display: table;   /* Allow the centering to work */
+	margin: 0 auto;
+}
+
+ul#horizontal-list {
+	min-width: 696px;
+	list-style: none;
+	padding-top: 20px;
+	}
+ul#horizontal-list li {
+    display: inline;
+}
+

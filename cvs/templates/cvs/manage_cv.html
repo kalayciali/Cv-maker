@@ -1,16 +1,22 @@
 {% extends 'cvs/home.html' %}
-
+{% block title %}
+<h1>Bütün bilgilerinizi buraya girebilirsiniz.</h1>
+{% endblock %}
 {% block content %}
-    <ul>
-        <li><button class="clickme">Deneyimler</button></li>
-        <li><button class="clickme">Eğitimler</button></li>
-        <li><button class="clickme">Projeler</button></li>
-        <li><button class="clickme">Diller</button></li>
-        <li><button class="clickme">Teknoloji</button></li>
-        <li><button class="clickme">Yetenekler</button></li>
-        <li><button class="clickme">Ödüller</button></li>
-        <li><button class="clickme">Yayın-Sertifika</button></li>
-    </ul>
+    <div id="menu-outer">
+      <div class="table">
+        <ul id="horizontal-list">
+            <li><button class="btn btn-outline-dark clickme">Deneyimler</button></li>
+            <li><button class="btn btn-outline-dark clickme">Eğitimler</button></li>
+            <li><button class="btn btn-outline-dark clickme">Projeler</button></li>
+            <li><button class="btn btn-outline-dark clickme">Diller</button></li>
+            <li><button class="btn btn-outline-dark clickme">Teknoloji</button></li>
+            <li><button class="btn btn-outline-dark clickme">Yetenekler</button></li>
+            <li><button class="btn btn-outline-dark clickme">Ödüller</button></li>
+            <li><button class="btn btn-outline-dark clickme">Yayın-Sertifika</button></li>
+        </ul>
+      </div>
+    </div>
     <form class="form-horizontal" method="post" action="">
         {% csrf_token %}
         <div class="Deneyimler">
@@ -18,7 +24,7 @@
             {% for form in formset %}
             <div class="row form-row">
                 <div class="col-6">
-                    {{form.as_p}}
+                    {{form.as_table}}
                 </div>
                 <div class="{{form.prefix}}">
                     <button class="btn btn-success add-new-form">Yeni Ekle</button>

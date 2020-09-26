@@ -3,7 +3,7 @@
 {% for form in formset %}
     <div class="row form-row">
         <div class="col-6">
-            {{form.as_p}}
+            {{form.as_table}}
         </div>
         <div class="{{form.prefix}}">
             <button class="btn btn-success add-new-form">Yeni Ekle</button>
