@@ -65,7 +65,7 @@ def generate_form(request):
     if form_title == "Projeler":
         formset = forms.ProjectFormSet( instance=profile, prefix="projects")
         form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
-        
+
     if form_title == "Diller":
         formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
             { 'decider': 'Lang', }
@@ -184,22 +184,27 @@ def generate_formsets(request, profile):
     exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
     all_formsets.append(exp_formset)
 
-    ed_formset = forms.EducationFormSet(request.POST, instance=profile, prefix='educations')
+    ed_formset = forms.EducationFormSet(request.POST, initial= [ { 'decider': 'Ed',} ],  
+                                        instance=profile, prefix='educations')
     all_formsets.append(ed_formset)
 
-    lang_formset = forms.LangFormSet(request.POST, instance=profile, prefix='languages')
+    lang_formset = forms.LangFormSet(request.POST, initial=[ { 'decider': 'Lang', } ] , 
+                                     instance=profile, prefix='languages')
     all_formsets.append(lang_formset)
 
-    tech_formset = forms.TechFormSet(request.POST, instance=profile, prefix='techs')
+    tech_formset = forms.TechFormSet(request.POST, initial=[ { 'decider': 'Tech', } ], 
+                                     instance=profile, prefix='techs')
     all_formsets.append(tech_formset)
 
-    skill_formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
+    skill_formset = forms.SkillFormSet(request.POST, initial=[ {'decider': 'Skill', } ], instance=profile, prefix='skills')
     all_formsets.append(skill_formset)
 
-    award_formset = forms.AwardFormSet(request.POST, instance=profile, prefix='awards')
+    award_formset = forms.AwardFormSet(request.POST, initial=[ { 'decider': 'Award' } ], 
+                                       instance=profile, prefix='awards')
     all_formsets.append(award_formset)
 
-    public_formset = forms.PublicFormSet(request.POST, instance=profile, prefix="publications")
+    public_formset = forms.PublicFormSet(request.POST, initial=[ { 'decider': 'Pub' } ], 
+                                         instance=profile, prefix="publications")
     all_formsets.append(public_formset)
 
     project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
