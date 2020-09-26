@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-  <h2>Sign up</h2>
+  <h2>Profil bilgilerini kaydet</h2>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% for field in form %}

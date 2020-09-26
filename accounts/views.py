@@ -34,7 +34,7 @@ def sign_user(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('accounts:index')
+            return redirect('home-cv')
     else:
         form = SignUpForm()
     return render(request, 'accounts/sign_up.html', { 'form': form })
