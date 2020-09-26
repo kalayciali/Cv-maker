@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'index/$', views.index_cvs, name='index-cvs'),
     url(r'index/ajax/gen_img/$', views.generate_image, name='gen-img'),
     url(r'manage/$', views.manage_cv, name='manage-cv'),
+    url(r'manage/ajax/gen_form/$', views.generate_form, name='gen-form'),
 ]

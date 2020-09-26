@@ -5,7 +5,8 @@ from . import models
 class ExperienceForm(ModelForm):
     class Meta:
         model = models.Experience
-        fields = ('name', 'role', 'address', 'descript', 'start_date', 'end_date', 'decider')
+        fields = ('name', 'role', 'address', 'descript', 'start_date', 'end_date')
+        exclude = [ 'decider', ]
         labels = {
             'name': "Ne deneyiminde bulundunuz? ya da Deneyimde bulunduğunuz yerin adı?",
             "role": "Sizin rolünüz ne idi?",
@@ -20,7 +21,8 @@ ExperienceFormSet = inlineformset_factory(Profile, models.Experience, form=Exper
 class EducationForm(ModelForm):
     class Meta:
         model = models.Experience
-        fields = ('name', 'role', 'descript', 'start_date', 'end_date', 'decider')
+        fields = ('name', 'role', 'descript', 'start_date', 'end_date')
+        exclude = [ 'decider', ]
         labels = {
             "name": "Okul ya da Üniversite adı",
             "role": "Bölümünüz ve not ortalamanız",
@@ -35,7 +37,8 @@ EducationFormSet = inlineformset_factory(Profile, models.Experience, form=Educat
 class LangForm(ModelForm):
     class Meta:
         model = models.Bar
-        fields = ('name', 'star', 'decider')
+        fields = ('name', 'star')
+        exclude = [ 'decider', ]
         labels = {
             'name': "Hangi dil",
             'star': "Ne kadar"
@@ -46,7 +49,8 @@ LangFormSet= inlineformset_factory(Profile, models.Bar, form=LangForm, can_delet
 class TechForm(ModelForm):
     class Meta:
         model = models.Bar
-        fields = ('name', 'star', 'decider')
+        fields = ('name', 'star')
+        exclude = [ 'decider', ]
         labels = {
             'name': "Hangi teknoloji",
             'star': "Ne kadar"
@@ -57,7 +61,8 @@ TechFormSet= inlineformset_factory(Profile, models.Bar, form=TechForm, can_delet
 class SkillForm(ModelForm):
     class Meta:
         model = models.Bar
-        fields = ('name', 'star', 'decider')
+        fields = ('name', 'star')
+        exclude = [ 'decider', ]
         labels = {
             'name': "Hangi yetenek",
             'star': "Ne kadar"
@@ -68,7 +73,8 @@ SkillFormSet = inlineformset_factory(Profile, models.Bar, form=SkillForm, can_de
 class AwardForm(ModelForm):
     class Meta:
         model = models.Award
-        fields = ('name', 'date', 'decider')
+        fields = ('name', 'date' )
+        exclude = [ 'decider', ]
         labels = {
             'name': "Ne ödülü aldınız? Hangi sertifika?",
             'date': "Hangi tarihte"
@@ -79,7 +85,8 @@ AwardFormSet= inlineformset_factory(Profile, models.Award, form=AwardForm, can_d
 class PublicForm(ModelForm):
     class Meta:
         model = models.Award
-        fields = ('name', 'date', 'decider')
+        fields = ('name', 'date' )
+        exclude = [ 'decider', ]
         labels = {
             'name': "Yayınınızın ismi",
             'date': "Hangi tarihte"

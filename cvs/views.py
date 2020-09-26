@@ -7,6 +7,7 @@ from . import models
 from . import forms
 from accounts.models import Profile
 from django.http import HttpResponse, FileResponse, JsonResponse
+from django.template.loader import render_to_string
 import json
 import re
 import os
@@ -36,10 +37,66 @@ def manage_cv(request):
                     'all_formsets': all_formsets
                 })
     else:
-        all_formsets = generate_formsets(request, profile)
+        exp_queryset = models.Experience.objects.filter(decider='Exp')
+        first_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
+            {'decider': 'Exp',}
+        ], queryset = exp_queryset )
         return render(request, 'cvs/manage_cv.html', {
-            'all_formsets': all_formsets
+            'formset': first_formset
         })
+
+def generate_form(request):
+    # ajax call
+    form_title = request.GET.get('title', None)
+    profile = request.user.profile
+    lang_queryset = models.Bar.objects.filter(decider='Lang')
+    tech_queryset = models.Bar.objects.filter(decider='Tech')
+    skill_queryset = models.Bar.objects.filter(decider='Skill')
+    educ_queryset = models.Experience.objects.filter(decider='Ed')
+    award_queryset = models.Award.objects.filter(decider='Award')
+    public_queryset = models.Award.objects.filter(decider='Pub')
+
+    if form_title == "Eğitimler":
+        formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
+            { 'decider': 'Ed',}
+        ], queryset= educ_queryset )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    if form_title == "Projeler":
+        formset = forms.ProjectFormSet( instance=profile, prefix="projects")
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
+
+    if form_title == "Diller":
+        formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
+            { 'decider': 'Lang', }
+        ] , queryset = lang_queryset)
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
+
+    if form_title == "Teknoloji":
+        formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
+            { 'decider': 'Tech', }
+        ], queryset = tech_queryset)
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    if form_title == "Yetenekler":
+        formset = forms.SkillFormSet( instance=profile, prefix='skills', initial=[ {'decider': 'Skill', } ], queryset = skill_queryset )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    if form_title == "Ödüller":
+        formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
+            { 'decider': 'Award' }
+        ], queryset = award_queryset )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset , 'title': form_title})
+
+    if form_title == "Yayın-Sertifika":
+        formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
+            { 'decider': 'Pub' }
+        ], queryset = public_queryset )
+        form_as_str = render_to_string('cvs/form.html', { 'formset': formset, 'title': form_title })
+
+    data = { 'form_html': form_as_str }
+    return JsonResponse(data)
+
 
 @login_required
 def index_cvs(request):
@@ -98,7 +155,7 @@ def info_cv(request):
 
 @login_required
 def show_cv(request, idx):
-    cv = models.Cv.objects.get(pk=idx)
+    cv = models.Cv.objects.get(id=idx)
     profile = request.user.profile
     new_html = generateHtml(cv.loc_data, cv, profile)
     html = HTML(string=new_html, base_url=request.build_absolute_uri('/'))
@@ -114,79 +171,73 @@ def show_cv(request, idx):
 
 # Helper functions
 
+def valid_for(formsets):
+    for formset in formsets:
+        for form in formset:
+            if not form.is_valid():
+                return False
+    return True
+
 def generate_formsets(request, profile):
+    # generate formsets for post
     all_formsets = []
-    if request.method == "POST":
-        exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
-        all_formsets.append(exp_formset)
+    exp_formset = forms.ExperienceFormSet(request.POST, instance=profile, prefix='experiences')
+    all_formsets.append(exp_formset)
 
-        ed_formset = forms.EducationFormSet(request.POST, instance=profile, prefix='educations')
-        all_formsets.append(ed_formset)
+    ed_formset = forms.EducationFormSet(request.POST, initial= [ { 'decider': 'Ed',} ],  
+                                        instance=profile, prefix='educations')
+    all_formsets.append(ed_formset)
 
-        lang_formset = forms.LangFormSet(request.POST, instance=profile, prefix='languages')
-        all_formsets.append(lang_formset)
+    lang_formset = forms.LangFormSet(request.POST, initial=[ { 'decider': 'Lang', } ] , 
+                                     instance=profile, prefix='languages')
+    all_formsets.append(lang_formset)
 
-        tech_formset = forms.TechFormSet(request.POST, instance=profile, prefix='techs')
-        all_formsets.append(tech_formset)
+    tech_formset = forms.TechFormSet(request.POST, initial=[ { 'decider': 'Tech', } ], 
+                                     instance=profile, prefix='techs')
+    all_formsets.append(tech_formset)
 
-        skill_formset = forms.SkillFormSet(request.POST, instance=profile, prefix='skills')
-        all_formsets.append(skill_formset)
+    skill_formset = forms.SkillFormSet(request.POST, initial=[ {'decider': 'Skill', } ], instance=profile, prefix='skills')
+    all_formsets.append(skill_formset)
 
-        award_formset = forms.AwardFormSet(request.POST, instance=profile, prefix='awards')
-        all_formsets.append(award_formset)
+    award_formset = forms.AwardFormSet(request.POST, initial=[ { 'decider': 'Award' } ], 
+                                       instance=profile, prefix='awards')
+    all_formsets.append(award_formset)
 
-        public_formset = forms.PublicFormSet(request.POST, instance=profile, prefix="publications")
-        all_formsets.append(public_formset)
+    public_formset = forms.PublicFormSet(request.POST, initial=[ { 'decider': 'Pub' } ], 
+                                         instance=profile, prefix="publications")
+    all_formsets.append(public_formset)
 
-        project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
-        all_formsets.append(project_formset)
-
-    else:
-        exp_formset = forms.ExperienceFormSet( instance=profile, prefix='experiences', initial= [
-            {'decider': 'Exp',}
-        ] )
-        all_formsets.append(exp_formset)
-
-        ed_formset = forms.EducationFormSet( instance=profile, prefix='educations', initial= [
-            { 'decider': 'Ed',}
-        ] )
-        all_formsets.append(ed_formset)
-
-        lang_formset = forms.LangFormSet( instance=profile, prefix='languages', initial=[
-            { 'decider': 'Lang', }
-        ] )
-        all_formsets.append(lang_formset)
-
-        tech_formset = forms.TechFormSet( instance=profile, prefix='techs', initial=[
-            { 'decider': 'Tech', }
-        ] )
-        all_formsets.append(tech_formset)
-
-        skill_formset = forms.SkillFormSet( instance=profile, prefix='skills', initial=[
-            { 'decider': 'Skill', }
-        ] )
-        all_formsets.append(skill_formset)
-
-        award_formset = forms.AwardFormSet( instance=profile, prefix='awards', initial=[
-            { 'decider': 'Award' }
-        ] )
-        all_formsets.append(award_formset)
-
-        public_formset = forms.PublicFormSet( instance=profile, prefix="publications", initial=[
-            { 'decider': 'Pub' }
-        ] )
-        all_formsets.append(public_formset)
-
-        project_formset = forms.ProjectFormSet( instance=profile, prefix="projects" )
-        all_formsets.append(project_formset)
+    project_formset = forms.ProjectFormSet(request.POST, instance=profile, prefix="projects")
+    all_formsets.append(project_formset)
 
     return all_formsets
+
+# HTML generation functions
+
+def appendCharTo(char_list, from_i, to_i, source):
+    for char in genHtmlFromUntil(from_i, to_i, source):
+        char_list.append(char)
+
+def appendAllSrcTo(char_list, gen_func):
+    for char in gen_func:
+        char_list.append(char)
+
+def appendAfterGen(char_list, str_src):
+    for char in genHtmlFromUntil(0, len(str_src), str_src):
+        char_list.append(char)
+
+def genHtmlFromUntil(from_i, to_i, source):
+    while from_i < to_i:
+        yield source[from_i]
+        from_i += 1
 
 
 def generateHtml(locData, cv, prof):
     loc_data = json.loads(locData, object_pairs_hook=OrderedDict)
     # locations as list [[start_idx, end_idx], ..]
-    # loc_data arranged in such a way that it has unimportant loc item between multiple number items such as experience, educ, award in order to follow the order of them
+    # loc_data arranged in such a way that it has unimportant loc item between 
+    # multiple number items such as experience, educ, award in order to follow the order of them
+
     html_temp = cv.html
     new_html_list = []
     old_loc = 0
@@ -257,6 +308,7 @@ def generateHtml(locData, cv, prof):
                 links = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             link_locs.append(loc)
+            # continue until links finished
             continue
 
         if links:
@@ -278,6 +330,7 @@ def generateHtml(locData, cv, prof):
                 exps = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             exp_locs.append(loc)
+            # continue until exps finished
             continue
 
         if exps:
@@ -298,6 +351,7 @@ def generateHtml(locData, cv, prof):
                 educs = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             educ_locs.append(loc)
+            # continue until educs finished
             continue
 
         if educs:
@@ -317,6 +371,7 @@ def generateHtml(locData, cv, prof):
                 projects = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             project_locs.append(loc)
+            # continue until projects finished
             continue
 
         if projects:
@@ -336,6 +391,7 @@ def generateHtml(locData, cv, prof):
                 awards = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             award_locs.append(loc)
+            # continue until awards finished
             continue
 
         if awards:
@@ -354,32 +410,16 @@ def generateHtml(locData, cv, prof):
         # substitution
         if substit:
             appendAllSrcTo(new_html_list, substit)
-            # move cursor after substitution
         else:
             appendCharTo(new_html_list, loc[0], loc[1], html_temp)
 
+        # move cursor after substitution
         old_loc = loc[1]
 
 
     new_html = "".join(new_html_list)
     return new_html
 
-def appendCharTo(char_list, from_i, to_i, source):
-    for char in genHtmlFromUntil(from_i, to_i, source):
-        char_list.append(char)
-
-def appendAllSrcTo(char_list, gen_func):
-    for char in gen_func:
-        char_list.append(char)
-
-def appendAfterGen(char_list, str_src):
-    for char in genHtmlFromUntil(0, len(str_src), str_src):
-        char_list.append(char)
-
-def genHtmlFromUntil(from_i, to_i, source):
-    while from_i < to_i:
-        yield source[from_i]
-        from_i += 1
 
 def linkStyle(name):
     if name == "twitter":
@@ -398,8 +438,9 @@ def barStyle(name):
     return genHtmlFromUntil(0, len(source), source)
 
 
-
 def genRequiredFieldFrom(cv, prof, capture):
+    # it generates required fields 
+
     if capture == "temp_name":
         return genHtmlFromUntil(0, len(cv.name), cv.name)
 
@@ -466,11 +507,5 @@ def genRequiredFieldFrom(cv, prof, capture):
         return exp_groupby['Ed']
 
 
-def valid_for(formsets):
-    for formset in formsets:
-        for form in formset:
-            if not form.is_valid():
-                return False
-    return True
 
 
