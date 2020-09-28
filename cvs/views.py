@@ -131,27 +131,13 @@ def generate_image(request):
 def info_cv(request):
     user = request.user
     profile_id = request.user.profile.id
-    lang_queryset = models.Bar.objects.filter(decider='Lang')
-    tech_queryset = models.Bar.objects.filter(decider='Tech')
-    skill_queryset = models.Bar.objects.filter(decider='Skill')
-    exp_queryset = models.Experience.objects.filter(decider='Exp')
-    educ_queryset = models.Experience.objects.filter(decider='Ed')
-    award_queryset = models.Award.objects.filter(decider='Award')
-    public_queryset = models.Award.objects.filter(decider='Pub')
-    prof_with_all_fields = Profile.objects.filter(id=profile_id).prefetch_related(
-        Prefetch("experience_set", queryset=exp_queryset, to_attr='prefetched_exps'),
-        Prefetch("experience_set", queryset=educ_queryset, to_attr='prefetched_educs'),
-        Prefetch("bar_set", queryset=lang_queryset, to_attr='prefetched_langs'),
-        Prefetch("bar_set", queryset=tech_queryset, to_attr='prefetched_techs'),
-        Prefetch("bar_set", queryset=skill_queryset, to_attr='prefetched_skills'),
-        Prefetch("award_set", queryset=award_queryset, to_attr='prefetched_awards'),
-        Prefetch("award_set", queryset=public_queryset, to_attr='prefetched_publics'),
-        Prefetch("project_set", to_attr='prefetched_projects')
-    )
+    prof_with_all_fields = getPrefetchedProfile(profile_id)
     return render(request, 'cvs/info_cv.html', {
         'user': user,
         'prof_with_all_fields': prof_with_all_fields
         })
+
+
 
 @login_required
 def show_cv(request, idx):
@@ -169,7 +155,30 @@ def show_cv(request, idx):
 
 
 
-# Helper functions
+##############################################################################
+################### Helper functions #################
+##############################################################################################
+
+def getPrefetchedProfile(prof_id):
+    lang_queryset = models.Bar.objects.filter(decider='Lang')
+    tech_queryset = models.Bar.objects.filter(decider='Tech')
+    skill_queryset = models.Bar.objects.filter(decider='Skill')
+    exp_queryset = models.Experience.objects.filter(decider='Exp')
+    educ_queryset = models.Experience.objects.filter(decider='Ed')
+    award_queryset = models.Award.objects.filter(decider='Award')
+    public_queryset = models.Award.objects.filter(decider='Pub')
+
+    prof_with_all_fields = Profile.objects.filter(id=prof_id).prefetch_related(
+        Prefetch("experience_set", queryset=exp_queryset, to_attr='prefetched_exps'),
+        Prefetch("experience_set", queryset=educ_queryset, to_attr='prefetched_educs'),
+        Prefetch("bar_set", queryset=lang_queryset, to_attr='prefetched_langs'),
+        Prefetch("bar_set", queryset=tech_queryset, to_attr='prefetched_techs'),
+        Prefetch("bar_set", queryset=skill_queryset, to_attr='prefetched_skills'),
+        Prefetch("award_set", queryset=award_queryset, to_attr='prefetched_awards'),
+        Prefetch("award_set", queryset=public_queryset, to_attr='prefetched_publics'),
+        Prefetch("project_set", to_attr='prefetched_projects'),
+    )
+    return prof_with_all_fields
 
 def valid_for(formsets):
     for formset in formsets:
@@ -233,6 +242,9 @@ def genHtmlFromUntil(from_i, to_i, source):
 
 
 def generateHtml(locData, cv, prof):
+
+    user = prof.user
+    prof_with_all_fields = getPrefetchedProfile(prof.id)
     loc_data = json.loads(locData, object_pairs_hook=OrderedDict)
     # locations as list [[start_idx, end_idx], ..]
     # loc_data arranged in such a way that it has unimportant loc item between 
@@ -259,15 +271,16 @@ def generateHtml(locData, cv, prof):
 
     for capture in loc_data:
 
-        substit = genRequiredFieldFrom(cv, prof, capture)
+        substit = genRequiredFieldFrom(cv, prof_with_all_fields, user, capture)
         loc = loc_data[capture]
 
         if (capture == "hum_bar" or "bar_" in capture ):
+            bar_without_num = False
             if capture == "hum_bar":
                 bars = substit
                 appendCharTo(new_html_list, old_loc, loc[0], html_temp)
             if capture == "bar_style_without_num":
-                otherStyle = True
+                bar_without_num = True
 
             bar_locs.append(loc)
             # continue until bars finished
@@ -288,7 +301,7 @@ def generateHtml(locData, cv, prof):
                         appendAfterGen(new_html_list, f"{bar.star}%")
                         appendCharTo(new_html_list, bar_locs[5][1], bar_locs[2][1], html_temp)
                     else:
-                        if otherStyle:
+                        if bar_without_num:
                             appendAfterGen(new_html_list, bar.name)
                             appendCharTo(new_html_list, bar_locs[3][1], bar_locs[4][0], html_temp)
                             appendAfterGen(new_html_list, f"width: {bar.star}%;")
@@ -438,74 +451,70 @@ def barStyle(name):
     return genHtmlFromUntil(0, len(source), source)
 
 
-def genRequiredFieldFrom(cv, prof, capture):
+def genRequiredFieldFrom(cv, prof_with_all_fields, user, capture):
     # it generates required fields 
 
-    if capture == "temp_name":
-        return genHtmlFromUntil(0, len(cv.name), cv.name)
+    for prof in prof_with_all_fields:
+        # one loop
 
-    if capture == "temp_css":
-        return genHtmlFromUntil(0, len(cv.css), cv.css)
+        if capture == "temp_name":
+            return genHtmlFromUntil(0, len(cv.name), cv.name)
 
-    if capture == "img":
-        source = f'media/{prof.profile_pic.name}'
-        return genHtmlFromUntil(0, len(source), source)
+        if capture == "temp_css":
+            return genHtmlFromUntil(0, len(cv.css), cv.css)
 
-    if capture == "hum_name":
-        source = f'{prof.user.first_name} {prof.user.last_name}'
-        return genHtmlFromUntil(0, len(source), source)
-    if capture == "hum_mail":
-        source = f'{prof.user.email}'
-        return genHtmlFromUntil(0, len(source), source)
+        if capture == "img":
+            source = f'media/{prof.profile_pic.name}'
+            return genHtmlFromUntil(0, len(source), source)
 
-    if capture == "prof_bullet":
-        length = len(prof.bullet_descript)
-        return genHtmlFromUntil(0, length, prof.bullet_descript)
+        if capture == "hum_name":
+            source = f'{user.first_name} {user.last_name}'
+            return genHtmlFromUntil(0, len(source), source)
+        if capture == "hum_mail":
+            source = f'{user.email}'
+            return genHtmlFromUntil(0, len(source), source)
 
-    if capture == "prof_address":
-        length = len(prof.address)
-        return genHtmlFromUntil(0, length, prof.address)
+        if capture == "prof_bullet":
+            length = len(prof.bullet_descript)
+            return genHtmlFromUntil(0, length, prof.bullet_descript)
 
-    if capture == "prof_desc":
-        length = len(prof.descript)
-        return genHtmlFromUntil(0, length, prof.descript)
+        if capture == "prof_address":
+            length = len(prof.address)
+            return genHtmlFromUntil(0, length, prof.address)
 
-    if capture == "hum_bar":
-        bar_val_list = prof.bar_set.all().values_list('decider', flat=True).distinct()
-        bar_groupby = {}
-        for val in bar_val_list:
-            bar_groupby[val] = prof.bar_set.filter(decider=val)
-        return bar_groupby
-    
-    if capture == "project_item":
-        project_all = prof.project_set.all()
-        return project_all
+        if capture == "prof_desc":
+            length = len(prof.descript)
+            return genHtmlFromUntil(0, length, prof.descript)
 
-    if capture == "award_item":
-        award_all = prof.award_set.all()
-        return award_all
+        if capture == "hum_bar":
+            all_bars = {}
+            all_bars["Teknolojiler"] = prof.prefetched_techs
+            all_bars["Diller"] = prof.prefetched_langs
+            all_bars["Yetenekler"] = prof.prefetched_skills
+            return all_bars
 
-    if capture == "link_item":
-        links = prof.links
-        linkArr = links.splitlines()
-        rg = r"[^~]+www.(.+).com[^~]+\/([^~]+)\/"
-        linkHash = {}
-        linkHash["name"] = []
-        linkHash["id"] = []
-        for link in linkArr:
-            m = re.match(rg, link)
-            linkHash["name"].append(m.group(1))
-            linkHash["id"].append(m.group(2))
-        return linkHash
-    exp_val_list = prof.experience_set.all().values_list('decider', flat=True).distinct()
-    exp_groupby = {}
-    for val in exp_val_list:
-        exp_groupby[val] = prof.experience_set.filter(decider=val)
-    if capture == "exp_item":
-        return exp_groupby['Exp']
-    if capture == "educ_item":
-        return exp_groupby['Ed']
+        if capture == "project_item":
+            return prof.prefetched_projects
 
+        if capture == "award_item":
+            return [prof.prefetched_awards, ].append(prof.prefetched_publics)
 
+        if capture == "link_item":
+            links = prof.links
+            linkArr = links.splitlines()
+            rg = r"[^~]+www.(.+).com[^~]+\/([^~]+)\/"
+            linkHash = {}
+            linkHash["name"] = []
+            linkHash["id"] = []
+            for link in linkArr:
+                m = re.match(rg, link)
+                linkHash["name"].append(m.group(1))
+                linkHash["id"].append(m.group(2))
+            return linkHash
+
+        if capture == "exp_item":
+            return prof.prefetched_exps
+        if capture == "educ_item":
+            return prof.prefetched_educs
 
 

@@ -1,4 +1,6 @@
 {% extends 'cvs/home.html' %}
+{% load crispy_forms_tags %}
+
 {% block title %}
 <h1>Bütün bilgilerinizi buraya girebilirsiniz.</h1>
 {% endblock %}
@@ -20,12 +22,24 @@
     <form class="form-horizontal" method="post" action="">
         {% csrf_token %}
         <div class="Deneyimler">
-            {{ formset.management_form }}
-            {% for form in formset %}
+            {{ formset.management_form|crispy }}
+            {% for form in formset.forms %}
             <div class="row form-row">
-                <div class="col-6">
-                    {{form.as_table}}
-                </div>
+                <table>
+                    {% for field in form.visible_fields %}
+                    <tr class="{{ form.prefix }}">
+                        <td>
+                            {% if forloop.first %}
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                            {% endif %}
+                            {{ field.errors.as_ul }}
+                            {{ field|as_crispy_field }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
                 <div class="{{form.prefix}}">
                     <button class="btn btn-success add-new-form">Yeni Ekle</button>
                 </div>
@@ -33,7 +47,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="cv-select">
             <div class="col-4 offset-2">
                 <button type="submit" class="btn btn-block btn-primary">CV seç</button>
             </div>
