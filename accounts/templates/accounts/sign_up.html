@@ -1,18 +1,17 @@
 {% extends 'accounts/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/accounts.css' %}">
+{% endblock %}
+
+{% block title %}
+<div class="jumbotron">
+    <h1>Profilini Oluştur!</h1>
+</div>
+{% endblock title %}
 
 {% block content %}
-  <h2>Profil bilgilerini kaydet</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
-        {% endfor %}
-      </p>
-    {% endfor %}
-    <button type="submit">KAYDOL</button>
-  </form>
+    {% crispy form %}
 {% endblock %}

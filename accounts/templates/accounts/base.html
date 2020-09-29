@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,33 +11,38 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
+{% block styles %}
+{% endblock %}
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous"/>
 
   </head>
-
    <body>
-       <nav class="navbar navbar-expand-lg navbar-light bg-light">
+       <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #8b0000">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{% url 'accounts:index' %}">CayCV</a>
             </div>
             <ul class="nav navbar-nav mr-auto">
-              <li class="nav-item active"><a class="btn btn-outline-dark" href="#">Cv Nasıl Olmalı</a></li>
-              <li class="nav-item active"><a class="btn btn-outline-dark" href="#">Page 2</a></li>
+              <li class="nav-item active"><a class="btn btn-dark" href="#">Forum</a></li>&nbsp;
+              <li class="nav-item active"><a class="btn btn-dark" href="#">Page 2</a></li>
             </ul>
     <ul class="nav navbar-nav navbar-right">
-          <li class="nav-item"><a class="btn btn-outline-dark" href="#"><i class="fas fa-file-powerpoint"></i> Cv'lerim</a></li>&nbsp;
+          <li class="nav-item"><a class="btn btn-dark" href="#"><i class="fas fa-file-powerpoint"></i> Cv'lerim</a></li>&nbsp;
           {% if user.is_authenticated %}
-          <li class="nav-item"><a class="btn btn-outline-dark" href="{% url 'info-cv' %}"><i class="fas fa-info"></i> Bilgilerim</a></li>&nbsp;
-          <li class="nav-item"><a class="btn btn-outline-dark" href="{% url 'accounts:logout-user' %}"><i class="fas fa-sign-out-alt"></i> Çıkış yap</a></li>
+          <li class="nav-item"><a class="btn btn-dark" href="{% url 'info-cv' %}"><i class="fas fa-info"></i> Bilgilerim</a></li>&nbsp;
+          <li class="nav-item"><a class="btn btn-dark" href="{% url 'accounts:logout-user' %}"><i class="fas fa-sign-out-alt"></i> Çıkış yap</a></li>
           {% else %}
-          <li><a class="btn btn-outline-dark" href="{% url 'accounts:sign-up' %}"><span><i class="fas fa-user"></i></span> Kaydol</a></li>&nbsp;
-          <li><a class="btn btn-outline-dark" href="{% url 'accounts:login-user' %}"><span><i class="fas fa-sign-in-alt"></i></span> Giriş</a></li>
+          <li><a class="btn btn-dark" href="{% url 'accounts:sign-up' %}"><span><i class="fas fa-user"></i></span> Kaydol</a></li>&nbsp;
+          <li><a class="btn btn-dark" href="{% url 'accounts:login-user' %}"><span><i class="fas fa-sign-in-alt"></i></span> Giriş</a></li>
           {% endif %}
     </ul>
   </div>
 </nav>
+
+    {% block title %}
+    {% endblock title %}
 
     <div class="container">
     {% block content%}

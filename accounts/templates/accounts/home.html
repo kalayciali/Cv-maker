@@ -1,14 +1,19 @@
 {% extends "accounts/base.html" %}
-{% block content %}
-<div class="jumbotron">
-  <div class="container">
-    <h1>Bi çay içimi hızında CV</h1>
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/home.css' %}">
+{% endblock %}
+
+{% block title %}
+<div class="jumbotron vertical-center" style="background-image: url({% static 'images/cay2.jpg'%});">
+    <h1>Bi Çay İçimi Hızında CV</h1>
     {% if user.is_authenticated %}
         <p>
             Şu anda profil bilgilerini tamamladın. Sırada eğitim, iş ve yeteneklerini doldurmalısın. Sakın yanlış anlama! Tek derdimiz senin efsane bir cv'ye sahip olabilmen! Daha sonra bilgilerini istediğin zaman profil bölümünden değiştirebilirsin. 
         </p>
         <br />
-        <p><a class="btn btn-primary btn-lg" href="{% url 'manage-cv' %}">Buradan devam</a></p>
+        <p><a class="btn btn-dark btn-lg" href="{% url 'manage-cv' %}">Buradan devam</a></p>
     {% else %}
         <p>
           CV'ye mi ihtiyacın var. Sen çayını içerken biz CV'ni hazırlayalım!<br />
@@ -16,8 +21,7 @@
           Herşey bu kadar kolay. Bize de bi çay ısmarlarsın artık!
         </p>
         <br />
-        <p><a class="btn btn-primary btn-lg" href="{% url 'accounts:sign-up' %}">Formu doldurmaya Başla</a></p>
+        <p><a class="btn btn-dark btn-lg" href="{% url 'accounts:sign-up' %}">Formu doldurmaya Başla</a></p>
     {% endif %}
-  </div>
-</div>
+    </div>
 {% endblock %}

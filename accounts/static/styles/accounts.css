@@ -1,0 +1,13 @@
+body {
+    background-color: #808080;
+}
+.jumbotron {
+    padding: 30px;
+    background-color: #696969;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 5px black;
+}
+.jumbotron h1 {
+    font-weight: 600;
+}

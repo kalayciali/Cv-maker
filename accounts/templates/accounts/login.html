@@ -1,17 +1,16 @@
 {% extends 'accounts/base.html' %}
+
 {% block content %}
-  <div class="container">
-    <div class="jumbotron">
-      <h1>Login here :</h1>
+<div class="jumbotron">
+  <h1>Giriş yap</h1>
 <form method="post" action="{% url 'accounts:login-user' %}">
-          {% csrf_token %}
-          {# A more "HTML" way of creating the login form#}
-          <label for="username">Username:</label>
-          <input type="text" name="username" placeholder="Username">
-<label for="password">Password:</label>
-          <input type="password" name="password" placeholder="Password">
+      {% csrf_token %}
+      {# A more "HTML" way of creating the login form#}
+      <label for="username" class="col-md-2 mb-0">Kullanıcı Adı: </label>
+      <input type="text" name="username" class="col-md-4 mb-0" placeholder="Username">
+<label for="password">Şifre: </label>
+      <input type="password" name="password" placeholder="Password">
 <input type="submit" name="" value="Login">
 </form>
 </div>
-  </div>
 {% endblock %}
