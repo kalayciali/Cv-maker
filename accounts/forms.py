@@ -64,8 +64,42 @@ class EditUserProfile(ModelForm):
         model = User
         fields = ('email', 'first_name', 'last_name')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('first_name', css_class='form-group col-md-3 mb-0'),
+                Column('last_name', css_class='form-group col-md-3 mb-0'),
+            ),
+            Row(
+                Column('email', css_class='form-group col-md-3 mb-0'),
+            )
+        )
+
 class ProfileForm(ModelForm):
     class Meta():
         model = Profile
         fields = ('profile_pic' ,'bullet_descript', 'descript', 'phone_num', 'address', 'links')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('profile_pic', css_class='form-group col-md-4 mb-0'),
+            ),
+            Row(
+                Column('address', css_class='form-group col-md-3 mb-0'),
+                Column('phone_num', css_class='form-group col-md-3 mb-0'),
+            ),
+            Row(
+                Column('links', css_class='form-group col-md-3 mb-0'),
+                Column('bullet_descript', css_class='form-group col-md-3 mb-0'),
+            ),
+            Row(
+                Column('descript', css_class='form-group col-md-4 mb-0'),
+            ),
+            Submit('submit', 'Kaydol', css_class='btn btn-dark')
+        )
 

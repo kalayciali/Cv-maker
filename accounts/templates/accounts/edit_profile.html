@@ -1,11 +1,8 @@
 {% extends 'accounts/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
   <h2>Profilini düzenle</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-        {{ user_form.as_p }}
-        {{ prof_form.as_p }}
-    <button type="submit">KAYDOL</button>
-  </form>
+  {% crispy user_form %}
+  {% crispy prof_form %}
 {% endblock %}

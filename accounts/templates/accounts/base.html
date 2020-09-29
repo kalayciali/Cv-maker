@@ -20,26 +20,26 @@
   </head>
    <body>
        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #8b0000">
-        <div class="container-fluid">
+        <div class="container-fluid justify-content-between">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{% url 'accounts:index' %}">CayCV</a>
             </div>
             <ul class="nav navbar-nav mr-auto">
-              <li class="nav-item active"><a class="btn btn-dark" href="#">Forum</a></li>&nbsp;
-              <li class="nav-item active"><a class="btn btn-dark" href="#">Page 2</a></li>
+              <li class="nav-item active"><a class="nav-link" href="#">Forum</a></li>&nbsp;
+              <li class="nav-item active"><a class="nav-link" href="#">Page 2</a></li>
             </ul>
-    <ul class="nav navbar-nav navbar-right">
-          <li class="nav-item"><a class="btn btn-dark" href="#"><i class="fas fa-file-powerpoint"></i> Cv'lerim</a></li>&nbsp;
-          {% if user.is_authenticated %}
-          <li class="nav-item"><a class="btn btn-dark" href="{% url 'info-cv' %}"><i class="fas fa-info"></i> Bilgilerim</a></li>&nbsp;
-          <li class="nav-item"><a class="btn btn-dark" href="{% url 'accounts:logout-user' %}"><i class="fas fa-sign-out-alt"></i> Çıkış yap</a></li>
-          {% else %}
-          <li><a class="btn btn-dark" href="{% url 'accounts:sign-up' %}"><span><i class="fas fa-user"></i></span> Kaydol</a></li>&nbsp;
-          <li><a class="btn btn-dark" href="{% url 'accounts:login-user' %}"><span><i class="fas fa-sign-in-alt"></i></span> Giriş</a></li>
-          {% endif %}
-    </ul>
-  </div>
-</nav>
+            <ul class="nav navbar-nav">
+                  {% if user.is_authenticated %}
+                  <li class="nav-item" ><a class="nav-link" href="#" style="color: white;"><i class="fas fa-file-powerpoint"></i> Cv'lerim</a></li>&nbsp;
+                  <li class="nav-item"><a class="nav-link" href="{% url 'info-cv' %}" style="color: white;"><i class="fas fa-info"></i> Bilgilerim</a></li>&nbsp;
+                  <li class="nav-item"><a class="nav-link" href="{% url 'accounts:logout-user' %}" style="color: white;"><i class="fas fa-sign-out-alt"></i> Çıkış yap</a></li>
+                  {% else %}
+                  <li class="nav-item"><a class="nav-link" href="{% url 'accounts:sign-up' %}" style="color: white;"><span><i class="fas fa-user"></i></span> Kaydol</a></li>&nbsp;
+                  <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login-user' %}" style="color: white;"><span><i class="fas fa-sign-in-alt"></i></span> Giriş</a></li>
+                  {% endif %}
+            </ul>
+        </div>
+    </nav>
 
     {% block title %}
     {% endblock title %}

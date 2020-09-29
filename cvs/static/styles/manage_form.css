@@ -1,0 +1,8 @@
+#menu-outer ul {
+    list-style: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+#menu-outer li {
+    display: inline;
+}

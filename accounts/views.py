@@ -59,7 +59,6 @@ def edit_profile(request, pk):
             'prof_form': prof_form
         })
 
-
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
