@@ -81,6 +81,14 @@ class ProfileForm(ModelForm):
     class Meta():
         model = Profile
         fields = ('profile_pic' ,'bullet_descript', 'descript', 'phone_num', 'address', 'links')
+        labels = {
+            'profile_pic': "Profil fotoğrafınız",
+            "bullet_descript": "Kimsiniz?",
+            "descript": "Kendinizi anlatın",
+            "phone_num": "0 dahil telefon numaranız",
+            "address": "Yaşadığınız şehir, ilçe",
+            "links": "Sosyal hesaplarınız"
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

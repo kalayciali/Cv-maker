@@ -1,8 +1,18 @@
 {% extends 'accounts/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/accounts.css' %}">
+{% endblock %}
+
+{% block title %}
+<div class="jumbotron">
+    <h1>Profilini düzenle!</h1>
+</div>
+{% endblock title %}
 
 {% block content %}
-  <h2>Profilini düzenle</h2>
   {% crispy user_form %}
   {% crispy prof_form %}
 {% endblock %}

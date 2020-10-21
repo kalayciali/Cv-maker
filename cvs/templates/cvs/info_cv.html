@@ -1,137 +1,125 @@
 {% extends 'cvs/home.html' %}
 {% load static %}
 
-{% block styles%}
-    <link rel="stylesheet" type="text/css" href="{% static 'cvs/show.css' %}">
-{% endblock %}
 
 {% block title %}
-<h1>Bütün bilgilerinizi burada görebilirsiniz.</h1>
+<div class="jumbotron">
+    <h1>Bütün bilgilerinizi burada görebilirsiniz.</h1>
+</div>
 {% endblock title %}
 
 {% block content %}
 {% for profile in prof_with_all_fields%}
-<div class=names>
-    <h1>Profil</h1>
-    <h1>Deneyimler</h1>
-    <h1>Eğitim</h1>
-    <h1>Yetenekler</h1>
-    <h1>Projeler</h1>
-    <h1>Ödül-Sertifika</h1>
+<div class="row names">
+    <h1>Profil Deneyimler Eğitim Yetenekler Projeler Ödül-Sertifika</h1>
 </div>
-<div class="profile">
-    <div class="prof-img">
-        <img src="{{profile.profile_pic.url}}" alt="profil_fotoğrafı" width="200" height="200"></img>
+
+<div class="profile row">
+    <div class="prof-img col-2 mb-0">
+        <img src="{{profile.profile_pic.url}}" alt="profil_fotoğrafı" width="100" height="100"></img>
     </div>
-    <div class="prof-info">
+    <div class="prof-info col-4">
         <p>{{user.first_name}} {{user.last_name}}</p>
         <p>{{user.email}}</p>
         <p>{{profile.address}}</p>
         <p>{{profile.phone_num}}</p>
         <p>{{profile.links}}</p>
     </div>
-    <div class="prof-exp">
-        <p>{{profile.bullet_descript}}</p>
-        <p>{{profile.descript}}</p>
+    <div class="prof-exp col-4">
+        <p>{{profile.bullet_descript}}</p></div>
+        <p>{{profile.descript}}</p></div>
+    </div>
+    <div class="prof-setting col-2">
+        <p><a class="btn btn-outline-dark" href="{% url 'accounts:edit-user' user.id %}">Profilini düzenle</a></p>
     </div>
 </div>
 
-<div class="experiences">
     {% for experience in profile.prefetched_exps %}
-    <div class="exp-info">
+<div class="experiences row">
+    <div class="exp-info col-6">
         <p>{{experience.name}}</p>
         <p>{{experience.role}}</p>
         <p>{{experience.address}}</p>
         <p>{{experience.start_date}}</p>
         <p>{{experience.end_date}}</p>
     </div>
-    <div class="exp-desc">
+    <div class="exp-desc col-6">
         <p>{{experience.descript}}</p>
     </div>
-    {% endfor %}
 </div>
+    {% endfor %}
 
-<div class="educations">
     {% for education in profile.prefetched_educs %}
-    <div class="educ-info">
+<div class="educations row">
+    <div class="educ-info col-6">
         <h4>Okul adı: </h4><p>{{education.name}}</p>
         <h4>Bölüm: </h4><p>{{education.role}}</p>
         <h4>Şehir: </h4><p>{{education.address}}</p>
         <h4>Başlangıç: </h4><p>{{education.start_date}}</p>
         <h4></h4><p>{{education.end_date}}</p>
     </div>
-    <div class="educ-desc">        
+    <div class="educ-desc col-6">        
         <h4>Açıklama: </h4><p>{{education.descript}}</p>
+    </div>
+</div>
+    {% endfor %}
+
+<div class="technologies row">
+    {% for tech in profile.prefetched_techs %}
+    <div class="tech col">
+        <p>{{tech.name}}</p>
+        <p>{{tech.star}}</p>
     </div>
     {% endfor %}
 </div>
 
-<div class="bars">
-    <div class="technologies">
-        {% for tech in profile.prefetched_techs %}
-        <div class="tech">
-            <p>{{tech.name}}</p>
-            <p>{{tech.star}}</p>
-        </div>
-        {% endfor %}
+<div class="languages row">
+    {% for lang in profile.prefetched_langs %}
+    <div class="lang col">
+        <p>{{lang.name}}</p>
+        <p>{{lang.star}}</p>
     </div>
+    {% endfor %}
+</div>
 
-    <div class="languages">
-        {% for lang in profile.prefetched_langs %}
-        <div class="lang">
-            <p>{{lang.name}}</p>
-            <p>{{lang.star}}</p>
-        </div>
-        {% endfor %}
+<div class="skills row">
+    {% for skill in profile.prefetched_skills %}
+    <div class="skill col">
+        <p>{{skill.name}}</p>
+        <p>{{skill.star}}</p>
     </div>
-
-    <div class="skills">
-        {% for skill in profile.prefetched_skills %}
-        <div class="skill">
-            <p>{{skill.name}}</p>
-            <p>{{skill.star}}</p>
-        </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
 </div>
 
 
-<div class="projects">
     {% for project in profile.prefetched_projects %}
-    <div class="project-info">
+<div class="projects row">
+    <div class="project-info col-3">
         <p>{{project.name}}</p>
         <p>{{project.role}}</p>
     </div>
-    <div class="project-desc">
+    <div class="project-desc col-6">
         <p>{{project.descript}}</p>
     </div>
     {% endfor %}
 </div>
     
-<div class="papers">
-    <div class="awards">
-        {% for award in profile.prefetched_awards %}
-        <div class="award">
-            <p>{{award.name}}</p>
-            <p>{{award.date}}</p>
-        </div>
-        {% endfor %}
+<div class="awards row">
+    {% for award in profile.prefetched_awards %}
+    <div class="award col">
+        <p>{{award.name}}</p>
+        <p>{{award.date}}</p>
     </div>
+    {% endfor %}
+</div>
 
-    <div class="publications">
-        {% for public in profile.prefetched_publics%}
-        <div class="public">
-            <p>{{public.name}}</p>
-            <p>{{public.date}}</p>
-        </div>
-        {% endfor %}
+<div class="publications row">
+    {% for public in profile.prefetched_publics%}
+    <div class="public col">
+        <p>{{public.name}}</p>
+        <p>{{public.date}}</p>
     </div>
-</div>
-<div class="profile-form">
-    <p><a class="btn btn-outline-dark" href="{% url 'accounts:edit-user' user.id %}">Profilini düzenle</a></p>
-</div>
-<div class="others-form">
-
+    {% endfor %}
 </div>
 
 {% endfor %}    
