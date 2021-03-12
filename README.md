@@ -13,7 +13,7 @@ ProfileCv model is the through model between Profile and Cv.
 Firstly, with createTemplate func., I find the loc data of each required field within html
 by writing suitable regex for it. It works locally, than add Cv model with loc data to database.
 Main func for generating new html from plain one is within cvs/views.py. It looks messy.
-It needs refactoring but it works.
+It needs refactoring but it works. Probably I need to make all if else statements as data structure so that it will be more readable.
 
 For future improvements, i need to add parallel programming to show cv images.
 
